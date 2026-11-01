@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factura {{ factura_codigo }} - Hotel MM</title>
+    <!-- Mantiene los estilos unificados de tu hotel -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='factura.css') }}">
+</head>
+<body>
+
+    <!-- Barra de acciones interactiva (Solo vista Web) -->
+    <div class="actions-bar">
+        <a href="/" class="btn-volver">← Volver al inicio</a>
+        <div class="invoice-actions">
+            <button id="copyInvoiceBtn" class="copy-btn" type="button">Copiar número de factura</button>
+            {% if session.get("administrador_id") %}
+            <button id="printBtn" class="print-btn" type="button">🖨️ Imprimir Factura Cliente</button>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Contenedor Principal de la Factura (Efecto hoja física) -->
+    <div class="invoice-box">
+        
+        <!-- Indicador reglamentario para el cliente -->
+        <div class="customer-copy-badge">ORIGINAL: CLIENTE</div>
+
+        <!-- Encabezado / Datos del Hotel MM -->
+        <div class="header">
+            <div>
+                <div class="company-logo">HOTEL MM</div>
+                <div class="company-tax-id">RUC: 80012345-6</div>
+            </div>
+            <div class="company-details">
+                <p>Avda. Principal entre 14 de Mayo</p>
+                <p>Pedro Juan Caballero, Paraguay</p>
+                <p>info@hotelmm.com | +595 961 000 000</p>
+            </div>
+        </div>
+
+        <!-- Información de Facturación y Datos Extraídos del Backend -->
+        <div class="details-container">
+            <div class="bill-to">
+                <h3>Facturado a:</h3>
+                <div class="details-text">
+                    <strong>{{ cliente_nombre }}</strong><br>
+                    <strong>Doc / CI:</strong> {{ cliente_documento }}<br>
+                    <strong>Email:</strong> {{ cliente_correo }}<br>
+                    <strong>Tel:</strong> {{ cliente_telefono }}
+                </div>
+            </div>
+            <div class="invoice-info">
+                <div class="invoice-title">FACTURA</div>
+                <div class="details-text">
+                    <strong>Nº Factura:</strong> {{ factura_codigo }}<br>
+                    <strong>Fecha de Entrada:</strong> {{ fecha_entrada }}<br>
+                    <strong>Fecha de Salida:</strong> {{ fecha_salida }}<br>
+                    <strong>Método de Pago:</strong> {{ metodo_pago }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla Dinámica de Conceptos -->
+        <table class="invoice-table">
+            <thead>
+                <tr>
+                    <th class="col-cant">Cant.</th>
+                    <th class="col-desc">Descripción del Servicio</th>
+                    <th class="col-price text-right">Precio Unit.</th>
+                    <th class="col-total text-right">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Servicio de Hospedaje Premium - Hotel MM (Estadía Completa para {{ cantidad_huespedes }} personas)</td>
+                    <td class="text-right">Gs. {{ "{:,}".format(total_monto|int).replace(',', '.') }}</td>
+                    <td class="text-right">Gs. {{ "{:,}".format(total_monto|int).replace(',', '.') }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Bloque de Liquidación de Totales e Impuesto (IVA del 10% en Paraguay) -->
+        <div class="totals-container">
+            <table class="totals-table">
+                <tr>
+                    <td>Subtotal:</td>
+                    <td class="text-right">Gs. {{ "{:,}".format((total_monto / 1.1)|int).replace(',', '.') }}</td>
+                </tr>
+                <tr>
+                    <td>IVA (10%):</td>
+                    <td class="text-right">Gs. {{ "{:,}".format((total_monto - (total_monto / 1.1))|int).replace(',', '.') }}</td>
+                </tr>
+                <tr class="grand-total">
+                    <td><strong>Total General:</strong></td>
+                    <td class="text-right"><strong>Gs. {{ "{:,}".format(total_monto|int).replace(',', '.') }}</strong></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Sección de Firmas Obligatorias para Entrega -->
+        <div class="signature-container">
+            <div class="signature-block">
+                <div class="signature-line"></div>
+                <p>Firma Autorizada (Hotel MM)</p>
+            </div>
+            <div class="signature-block">
+                <div class="signature-line"></div>
+                <p>Recibí Conforme (Cliente)</p>
+            </div>
+        </div>
+
+        <!-- Pie de página informativo -->
+        <div class="footer-notes">
+            <p><strong>¡Muchas gracias por su preferencia!</strong></p>
+            <p>Esta es una copia física autorizada de comprobante de pago emitida para el pasajero. Los montos se liquidan en Guaraníes (Gs.).</p>
+        </div>
+
+    </div>
+
+    <!-- Script Inline de impresión directa -->
+    <script>
+        document.getElementById('copyInvoiceBtn').addEventListener('click', async () => {
+            const codigo = {{ factura_codigo|tojson }};
+            const boton = document.getElementById('copyInvoiceBtn');
+            try {
+                await navigator.clipboard.writeText(codigo);
+                boton.textContent = '¡Número copiado!';
+            } catch (error) {
+                const campo = document.createElement('textarea');
+                campo.value = codigo;
+                document.body.appendChild(campo);
+                campo.select();
+                document.execCommand('copy');
+                campo.remove();
+                boton.textContent = '¡Número copiado!';
+            }
+            setTimeout(() => {
+                boton.textContent = 'Copiar número de factura';
+            }, 2000);
+        });
+
+        const printButton = document.getElementById('printBtn');
+        if (printButton) {
+            printButton.addEventListener('click', () => {
+                window.print();
+            });
+        }
+    </script>
+</body>
+</html>

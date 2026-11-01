@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultar factura | Hotel MM</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='reserva.css') }}">
+</head>
+<body>
+    <header class="hotel-header">
+        <div class="logo">HOTEL MM</div>
+        <a href="/" class="volver-header">← Volver al inicio</a>
+    </header>
+
+    <main class="contenedor consultar-factura">
+        <section class="panel">
+            <h2>Consultar mi factura</h2>
+            <p>Ingresa el código que recibiste al confirmar tu reserva. Ejemplo: FAC-Ab12Cd34.</p>
+            <form method="post">
+                <div class="campo">
+                    <label for="codigo">Código de factura</label>
+                    <input id="codigo" name="codigo" type="text"
+                           placeholder="Ingresa tu código de factura" required>
+                </div>
+                <button type="submit" class="btn">Ver factura</button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

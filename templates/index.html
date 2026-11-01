@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Hotel MM - Confort y Lujo</title>
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet"
+        href="{{ url_for('static', filename='stilos.css') }}">
+</head>
+
+<body>
+
+    <!-- HEADER -->
+
+    <header class="hotel-header">
+
+        <div class="logo">
+            HOTEL MM
+        </div>
+
+        <nav class="nav-menu">
+            <a href="#hotel">Nosotros</a>
+            <a href="#gastronomia">Gastronomía</a>
+            <a href="#servicios">Servicios</a>
+            <a href="#contacto">Contacto</a>
+        </nav>
+
+        <a href="/reserva" class="btn-book-header">
+            Reservar Ahora
+        </a>
+        <a href="/consultar-factura" class="btn-book-header">
+            Ver factura
+        </a>
+
+    </header>
+
+    <!-- PORTADA -->
+
+    <section class="hero-section">
+
+        <div class="hero-content">
+
+            <h1>El descanso de lujo que mereces</h1>
+
+            <p>
+                Experiencias exclusivas y confort absoluto
+                en un entorno paradisíaco.
+            </p>
+
+        </div>
+
+    </section>
+
+    <main class="contenedor-experiencias">
+
+        <!-- HOTEL -->
+
+        <div id="hotel" class="anuncio">
+
+            <div class="contenido">
+
+                <div class="bloque-imagen">
+
+                    <img src="{{ url_for('static', filename='imagenes/descripcion.png') }}"
+                        alt="Instalaciones de Hotel MM">
+
+                </div>
+
+                <div class="bloque-texto">
+
+                    <h3 class="titulo-seccion">
+                        Acerca de Nuestro Hotel
+                    </h3>
+
+                    <p class="descripcion">
+                        En esta sección te hablaremos un poco acerca de nuestro hotel.
+                        Te aseguramos que la elección que hiciste al seleccionarnos
+                        no te decepcionará en lo absoluto.
+                    </p>
+
+                    <p class="descripcion">
+                        Contamos con las mejores instalaciones de la región y un
+                        estándar de alta calidad en atención al cliente, siempre a
+                        tus servicios y con la mejor actitud que te mereces.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- GASTRONOMÍA -->
+
+        <div id="gastronomia" class="anuncio">
+
+            <div class="contenido">
+
+                <div class="bloque-imagen">
+
+                    <img src="{{ url_for('static', filename='imagenes/gastronomia.png') }}"
+                        alt="Gastronomía de Hotel MM">
+
+                </div>
+
+                <div class="bloque-texto">
+
+                    <h3 class="titulo-seccion">
+                        Nuestra Gastronomía
+                    </h3>
+
+                    <p class="descripcion">
+                        Nuestra gastronomía es una de las mejores de la ciudad.
+                        Contamos con platos excepcionales creados por nuestros chefs
+                        ejecutivos, además de una selección de postres que te
+                        enamorarán con sus exquisitos sabores.
+                    </p>
+
+                    <p class="descripcion">
+                        También disponemos de una exclusiva carta de bebidas de
+                        variadas clases y prestigiosas marcas, seleccionadas para
+                        deleitar el paladar más exigente.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- SERVICIOS -->
+
+        <div id="servicios" class="anuncio">
+
+            <div class="contenido">
+
+                <div class="bloque-imagen">
+
+                    <img src="{{ url_for('static', filename='imagenes/servicios.png') }}"
+                        alt="Servicios de Hotel MM">
+
+                </div>
+
+                <div class="bloque-texto">
+
+                    <h3 class="titulo-seccion">
+                        Nuestros Servicios
+                    </h3>
+
+                    <p class="descripcion">
+                        Diseñamos cada detalle para garantizar su máxima comodidad.
+                        Nuestro equipo profesional acude a su llamado con inmediatez,
+                        calidez y una excelente actitud de servicio.
+                    </p>
+
+                    <p class="descripcion">
+                        Disfrute de nuestras exclusivas instalaciones que incluyen
+                        servicios premium de Spa, gimnasio totalmente equipado y
+                        espacios de relajación.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ✅ CONTACTO = REDES SOCIALES -->
+
+        <div id="contacto" class="social-menu">
+
+            <h3 class="titulo-seccion">Contacto</h3>
+
+            <ul>
+                <li>
+                    <a href="#" aria-label="Facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <span class="tooltip">Facebook</span>
+                </li>
+                <li>
+                    <a href="#" aria-label="WhatsApp">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                    <span class="tooltip">WhatsApp</span>
+                </li>
+                <li>
+                    <a href="#" aria-label="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <span class="tooltip">Instagram</span>
+                </li>
+                <li>
+                    <a href="#" aria-label="Telegram">
+                        <i class="fab fa-telegram"></i>
+                    </a>
+                    <span class="tooltip">Telegram</span>
+                </li>
+            </ul>
+
+        </div>
+
+        <!-- ✅ MENSAJE FINAL -->
+
+        <div class="anuncio-fin">
+            <h3 class="titulo-final">Muchas Gracias por su Atención</h3>
+            <p class="texto-final">
+                Hotel MM siempre le ofrece la calidad que usted busca y merece.<br>
+                A sus completos servicios, lo esperamos con nuestra mejor sonrisa.
+            </p>
+        </div>
+
+    </main>
+
+    <script>
+        const buttons = document.querySelectorAll('.social-menu ul li a');
+
+        buttons.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                let rect = this.getBoundingClientRect();
+                let x = e.clientX - rect.left;
+                let y = e.clientY - rect.top;
+
+                let ripple = document.createElement('span');
+                ripple.classList.add('ripple');
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                this.appendChild(ripple);
+
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+    </script>
+
+</body>
+
+</html>

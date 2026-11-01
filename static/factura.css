@@ -1,0 +1,276 @@
+/* Paleta oficial de Hotel MM extraída de los estilos del proyecto */
+:root {
+    --color-hotel-oscuro: #101e32;
+    --color-hotel-dorado: #d7b56d;
+    --color-texto: #263238;
+    --border-color: #cbd3dc;
+    --light-bg: #f8f9fb;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 20px;
+    color: var(--color-texto);
+    background-color: #f3f5f8;
+}
+
+.invoice-box {
+    max-width: 850px;
+    margin: 0 auto;
+    padding: 40px;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 5px 22px rgba(21, 38, 59, 0.07);
+    border-radius: 12px;
+    position: relative;
+}
+
+.customer-copy-badge {
+    position: absolute;
+    top: 20px;
+    right: 40px;
+    font-size: 11px;
+    font-weight: bold;
+    color: var(--color-hotel-oscuro);
+    border: 1px solid var(--color-hotel-oscuro);
+    padding: 4px 10px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 2px solid var(--color-hotel-dorado);
+    padding-bottom: 20px;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.company-logo {
+    font-size: 28px;
+    font-weight: bold;
+    color: var(--color-hotel-dorado);
+    letter-spacing: 2px;
+}
+
+.company-tax-id {
+    font-size: 14px;
+    margin-top: 5px;
+    color: var(--color-hotel-oscuro);
+    font-weight: bold;
+}
+
+.company-details {
+    text-align: right;
+    font-size: 13px;
+    color: #65717e;
+    line-height: 1.6;
+}
+
+.company-details p { margin: 2px 0; }
+
+.invoice-title {
+    font-size: 26px;
+    color: var(--color-hotel-oscuro);
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.details-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 35px;
+    gap: 20px;
+}
+
+.bill-to, .invoice-info { flex: 1; }
+.invoice-info { text-align: right; }
+
+h3 {
+    font-size: 14px;
+    text-transform: uppercase;
+    color: var(--color-hotel-oscuro);
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 5px;
+}
+
+.details-text {
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.details-text strong { color: var(--color-hotel-oscuro); }
+
+.invoice-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
+
+.invoice-table th {
+    background-color: var(--color-hotel-oscuro);
+    color: white;
+    text-align: left;
+    padding: 12px;
+    font-size: 13px;
+    text-transform: uppercase;
+}
+
+.invoice-table td {
+    padding: 14px 12px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 14px;
+}
+
+.invoice-table tr:nth-child(even) { background-color: var(--light-bg); }
+.col-cant { width: 10%; }
+.col-desc { width: 55%; }
+.col-price { width: 17%; }
+.col-total { width: 18%; }
+.text-right { text-align: right !important; }
+
+.totals-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 60px;
+}
+
+.totals-table {
+    width: 320px;
+    border-collapse: collapse;
+}
+
+.totals-table td {
+    padding: 10px 12px;
+    font-size: 14px;
+}
+
+.grand-total td {
+    border-top: 2px solid var(--color-hotel-oscuro);
+    font-size: 18px;
+    font-weight: bold;
+    color: #9b762f;
+}
+
+.signature-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 70px;
+    margin-bottom: 40px;
+    padding: 0 30px;
+}
+
+.signature-block {
+    text-align: center;
+    width: 240px;
+}
+
+.signature-line {
+    border-bottom: 1px solid #65717e;
+    margin-bottom: 8px;
+}
+
+.signature-block p {
+    font-size: 12px;
+    color: var(--color-hotel-oscuro);
+    margin: 0;
+}
+
+.footer-notes {
+    font-size: 11px;
+    color: #65717e;
+    border-top: 1px solid var(--border-color);
+    padding-top: 20px;
+    text-align: center;
+    line-height: 1.6;
+}
+
+/* Interfaz Web - Acciones */
+.actions-bar {
+    max-width: 850px;
+    margin: 20px auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.invoice-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.copy-btn {
+    background: #e8edf2;
+    color: var(--color-hotel-oscuro);
+    border: 1px solid var(--border-color);
+    padding: 12px 18px;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.copy-btn:hover {
+    background: #dce4eb;
+}
+
+.btn-volver {
+    color: var(--color-hotel-oscuro);
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.btn-volver:hover { text-decoration: underline; }
+
+.print-btn {
+    background: #b9974f;
+    color: var(--color-hotel-oscuro);
+    border: none;
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    transition: 0.2s;
+}
+
+.print-btn:hover {
+    background: var(--color-hotel-dorado);
+    transform: translateY(-1px);
+}
+
+/* ========================================================
+   REGLAS DE SALIDA DE IMPRESIÓN (MEDIO FÍSICO)
+   ======================================================== */
+@media print {
+    body {
+        background-color: #fff;
+        padding: 0;
+    }
+
+    .invoice-box {
+        border: none;
+        box-shadow: none;
+        padding: 0;
+        margin: 0;
+        max-width: 100%;
+    }
+
+    .actions-bar { display: none; }
+
+    .totals-container, .signature-container {
+        page-break-inside: avoid; /* No fragmenta las firmas en hojas distintas */
+    }
+
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+}

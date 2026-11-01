@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrativo | Hotel MM</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='panel.css') }}">
+</head>
+
+<body>
+    <header class="header">
+        <div class="logo">HOTEL MM</div>
+        <a href="/logout" class="btn-salir">Cerrar Sesión</a>
+    </header>
+
+    <section class="hero">
+        <h1>Panel Administrativo</h1>
+        <p>Gestión de reservas y clientes del Hotel MM</p>
+    </section>
+
+    <main class="contenedor">
+        <section class="cards">
+            <div class="card">
+                <h3>Reservas Totales</h3>
+                <p id="totalReservas">0</p>
+            </div>
+            <div class="card">
+                <h3>Clientes Registrados</h3>
+                <p id="totalClientes">0</p>
+            </div>
+            <div class="card">
+                <h3>Ingresos Totales</h3>
+                <p id="totalIngresos">Gs. 0</p>
+            </div>
+        </section>
+
+        <section class="seccion-reservas">
+            <h2>Reservas registradas</h2>
+            <div class="tabla-contenedor">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Cliente</th>
+                            <th>Documento</th>
+                            <th>Entrada</th>
+                            <th>Salida</th>
+                            <th>Huéspedes</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaReservas">
+                        <tr>
+                            <td colspan="8" class="sin-datos">Cargando reservas...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='panel.js') }}" defer></script>
+</body>
+
+</html>

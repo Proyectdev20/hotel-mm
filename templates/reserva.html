@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Reservas y Pagos | Hotel MM</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='reserva.css') }}">
+
+    <script
+        src="{{ url_for('static', filename='reserva.js') }}"
+        defer>
+    </script>
+
+</head>
+
+<body>
+
+    <header class="hotel-header">
+        <div class="logo">HOTEL MM</div>
+
+        <a href="/" class="volver-header">
+            ← Volver al inicio
+        </a>
+        <a href="/consultar-factura" class="volver-header">
+            Ver factura
+        </a>
+    </header>
+
+    <section class="hero">
+        <h1>Reserva tu estadía</h1>
+
+        <p>
+            Confort, elegancia y atención exclusiva
+            para una experiencia inolvidable.
+        </p>
+    </section>
+
+    <main class="contenedor">
+
+        <!-- FORMULARIO DE RESERVA -->
+
+        <section class="panel">
+
+            <h2>Datos de la reserva</h2>
+
+            <form id="formReserva">
+
+                <!-- ✅ MENSAJE DE ÉXITO -->
+                {% if exito %}
+                <div class="mensaje-exito">
+                    ✅ ¡Reserva enviada con éxito! Te contactaremos pronto.
+                </div>
+                {% endif %}
+
+                <div class="fila">
+
+                    <div class="campo">
+                        <label for="nombre">Nombre completo</label>
+                        <input type="text"
+                               id="nombre"
+                               name="nombre"
+                               placeholder="Nombre y apellido"
+                               required>
+                    </div>
+
+                    <div class="campo">
+                        <label for="documento">
+                            Documento de identidad
+                        </label>
+                        <input type="text"
+                               id="documento"
+                               name="documento"
+                               placeholder="Número de documento"
+                               required>
+                    </div>
+
+                </div>
+
+                <div class="campo">
+                    <label for="correo">
+                        Correo electrónico
+                    </label>
+                    <input type="email"
+                           id="correo"
+                           name="correo"
+                           placeholder="ejemplo@correo.com"
+                           required>
+                </div>
+
+                <div class="campo">
+                    <label for="telefono">
+                        Teléfono
+                    </label>
+                    <input type="tel"
+                           id="telefono"
+                           name="telefono"
+                           placeholder="Número de contacto"
+                           required>
+                </div>
+
+                <h2 class="seccion-titulo">
+                    Detalles de la estadía
+                </h2>
+
+                <div class="fila">
+                    <div class="campo">
+                        <label for="entrada">
+                            Fecha de entrada
+                        </label>
+                        <input type="date"
+                               id="entrada"
+                               name="entrada"
+                               required>
+                    </div>
+
+                    <div class="campo">
+                        <label for="salida">
+                            Fecha de salida
+                        </label>
+                        <input type="date"
+                               id="salida"
+                               name="salida"
+                               required>
+                    </div>
+                </div>
+
+                <div class="fila">
+                    <div class="campo">
+                        <label for="habitacion">
+                            Tipo de habitación
+                        </label>
+                        <select id="habitacion" name="habitacion">
+                            <option value="350000">
+                                Habitación estándar
+                            </option>
+                            <option value="500000">
+                                Habitación deluxe
+                            </option>
+                            <option value="750000">
+                                Suite presidencial
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="campo">
+                        <label for="personas">
+                            Cantidad de huéspedes
+                        </label>
+                        <select id="personas" name="personas">
+                            <option value="1">
+                                1 persona
+                            </option>
+                            <option value="2" selected>
+                                2 personas
+                            </option>
+                            <option value="3">
+                                3 personas
+                            </option>
+                            <option value="4">
+                                4 personas
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <h2 class="seccion-titulo">
+                    Método de pago
+                </h2>
+
+                <div class="metodos">
+                    <label class="metodo">
+                        <input type="radio"
+                               name="pago"
+                               value="Tarjeta de crédito"
+                               checked>
+                        Tarjeta de crédito
+                    </label>
+
+                    <label class="metodo">
+                        <input type="radio"
+                               name="pago"
+                               value="Tarjeta de débito">
+                        Tarjeta de débito
+                    </label>
+
+                    <label class="metodo">
+                        <input type="radio"
+                               name="pago"
+                               value="Transferencia bancaria">
+                        Transferencia
+                    </label>
+
+                    <label class="metodo">
+                        <input type="radio"
+                               name="pago"
+                               value="Pago en el hotel">
+                        Pago en el hotel
+                    </label>
+                </div>
+
+                <div id="datosTarjeta">
+                    <div class="campo">
+                        <label for="titular">
+                            Titular de la tarjeta
+                        </label>
+                        <input type="text"
+                               id="titular"
+                               name="titular"
+                               placeholder="Nombre del titular"
+                               autocomplete="cc-name">
+                    </div>
+
+                    <div class="campo">
+                        <label for="tarjeta">
+                            Número de tarjeta
+                        </label>
+                        <input type="text"
+                               id="tarjeta"
+                               name="tarjeta"
+                               placeholder="1234 5678 9012 3456"
+                               inputmode="numeric"
+                               maxlength="19"
+                               autocomplete="off">
+                    </div>
+
+                    <div class="fila">
+                        <div class="campo">
+                            <label for="vencimiento">
+                                Vencimiento
+                            </label>
+                            <input type="text"
+                                   id="vencimiento"
+                                   name="vencimiento"
+                                   placeholder="MM/AA"
+                                   maxlength="5"
+                                   autocomplete="off">
+                        </div>
+
+                        <div class="campo">
+                            <label for="cvv">
+                                CVV
+                            </label>
+                            <input type="password"
+                                   id="cvv"
+                                   name="cvv"
+                                   placeholder="123"
+                                   maxlength="4"
+                                   autocomplete="off">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn">
+                    Confirmar reserva
+                </button>
+
+                <div id="mensaje"
+                     class="mensaje"
+                     role="status"
+                     aria-live="polite">
+                </div>
+
+            </form>
+
+        </section>
+
+        <!-- RESUMEN -->
+
+        <aside class="panel">
+
+            <h2>Resumen de tu estadía</h2>
+
+            <div class="resumen">
+
+                <img src="{{ url_for('static', filename='imagenes/descripcion.png') }}" alt="Instalaciones de Hotel MM">
+
+                <h3>Hotel MM</h3>
+
+                <p class="subtitulo">
+                    Tu próximo destino de descanso
+                </p>
+
+                <div class="detalle">
+                    <span>Habitación</span>
+                    <strong id="nombreHabitacion">
+                        Estándar
+                    </strong>
+                </div>
+
+                <div class="detalle">
+                    <span>Precio por noche</span>
+                    <strong id="precioNoche">
+                        Gs. 350.000
+                    </strong>
+                </div>
+
+                <div class="detalle">
+                    <span>Huéspedes</span>
+                    <strong id="resumenPersonas">
+                        2
+                    </strong>
+                </div>
+
+                <div class="detalle">
+                    <span>Noches</span>
+                    <strong id="noches">
+                        0
+                    </strong>
+                </div>
+
+                <div class="detalle">
+                    <span>Entrada</span>
+                    <strong id="resumenEntrada">
+                        No seleccionada
+                    </strong>
+                </div>
+
+                <div class="detalle">
+                    <span>Salida</span>
+                    <strong id="resumenSalida">
+                        No seleccionada
+                    </strong>
+                </div>
+
+                <div class="detalle total">
+                    <span>Total estimado</span>
+                    <span id="total">
+                        Gs. 0
+                    </span>
+                </div>
+
+            </div>
+
+            <p class="nota">
+                Tarifas ilustrativas. El precio final depende
+                de las tarifas que establezca el hotel.
+            </p>
+
+            <a href="/"
+               class="enlace-volver">
+                Volver a la página principal
+            </a>
+
+        </aside>
+
+    </main>
+
+    <footer>
+        © 2026 Hotel MM - Confort y Lujo.
+        Todos los derechos reservados.
+    </footer>
+
+</body>
+
+</html>

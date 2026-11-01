@@ -1,0 +1,407 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f3f5f8;
+    color: #263238;
+    line-height: 1.5;
+}
+
+/* ENCABEZADO */
+
+.hotel-header {
+    background: #101e32;
+    color: white;
+    padding: 22px 8%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.logo {
+    color: #d7b56d;
+    font-size: 25px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.volver-header {
+    color: white;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.volver-header:hover {
+    color: #d7b56d;
+}
+
+/* PORTADA */
+
+.hero {
+    background: linear-gradient(135deg, #101e32, #263f5c);
+    color: white;
+    text-align: center;
+    padding: 55px 20px;
+}
+
+.hero h1 {
+    color: #e4c780;
+    font-size: 36px;
+    margin-bottom: 12px;
+}
+
+.hero p {
+    color: #e0e5ed;
+}
+
+/* CONTENEDOR PRINCIPAL */
+
+.contenedor {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 25px;
+    align-items: start;
+}
+
+.panel {
+    background: white;
+    padding: 30px;
+    border-radius: 14px;
+    box-shadow: 0 5px 22px #15263b12;
+}
+
+h2 {
+    color: #142740;
+    margin-bottom: 22px;
+    font-size: 22px;
+}
+
+.seccion-titulo {
+    margin-top: 28px;
+    padding: 12px 0;
+    border-bottom: 1px solid #e3e7ec;
+}
+
+/* CAMPOS DEL FORMULARIO */
+
+.campo {
+    margin-bottom: 18px;
+}
+
+.fila {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd3dc;
+    border-radius: 7px;
+    font-size: 15px;
+    background: white;
+    color: #263238;
+    font-family: inherit;
+}
+
+input:focus,
+select:focus {
+    outline: 2px solid #d7b56d;
+    border-color: #d7b56d;
+}
+
+/* ✅ CORRECCIÓN: Input de fecha */
+input[type="date"] {
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+input[type="date"]:focus {
+    outline: 2px solid #d7b56d;
+    border-color: #d7b56d;
+}
+
+/* ✅ CORRECCIÓN: Select con flecha personalizada */
+select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23687482' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    padding-right: 40px;
+}
+
+/* MÉTODOS DE PAGO */
+
+.metodos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.metodo {
+    border: 1px solid #d4dce5;
+    border-radius: 8px;
+    padding: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    transition: 0.2s;
+    background: white;
+}
+
+.metodo input[type="radio"] {
+    width: auto;
+    margin: 0;
+    accent-color: #b9974f;
+}
+
+.metodo:has(input:checked) {
+    border-color: #b9974f;
+    background: #fcf8ef;
+}
+
+#datosTarjeta .campo:first-child {
+    margin-top: 15px;
+}
+
+/* RESUMEN */
+
+.resumen {
+    background: #f8f9fb;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 22px;
+}
+
+.resumen img {
+    display: block;
+    width: 100%;
+    height: 170px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 18px;
+}
+
+.resumen h3 {
+    color: #142740;
+}
+
+.subtitulo {
+    color: #687482;
+    margin-top: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.detalle {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin: 16px 0;
+    font-size: 14px;
+}
+
+.detalle strong {
+    text-align: right;
+    overflow-wrap: anywhere;
+}
+
+.consultar-factura {
+    min-height: calc(100vh - 90px) !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 20px !important;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.consultar-factura .panel {
+    width: min(100%, 560px) !important;
+    margin: 0 auto !important;
+    text-align: center;
+}
+
+.consultar-factura form {
+    text-align: left;
+}
+
+.total {
+    border-top: 1px solid #d7dde5;
+    padding-top: 18px;
+    margin-top: 18px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #9b762f;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* BOTONES Y AVISOS */
+
+.btn {
+    display: block;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    padding: 15px;
+    background: #b9974f;
+    color: #101e32;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn:hover {
+    background: #d7b56d;
+    transform: translateY(-1px);
+}
+
+.btn:focus-visible,
+a:focus-visible {
+    outline: 3px solid #d7b56d;
+    outline-offset: 3px;
+}
+
+.nota {
+    font-size: 12px;
+    color: #65717e;
+    line-height: 1.6;
+    margin: 15px 0;
+}
+
+.mensaje {
+    display: none;
+    margin-top: 20px;
+    padding: 15px;
+    background: #edf8ef;
+    color: #236b35;
+    border-radius: 8px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+.enlace-volver {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #263f5c;
+    text-decoration: none;
+}
+
+.enlace-volver:hover {
+    color: #9b762f;
+    text-decoration: underline;
+}
+
+/* ✅ Mensaje de éxito de Flask */
+.mensaje-exito {
+    background: #d4edda;
+    color: #155724;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #c3e6cb;
+    text-align: center;
+    font-weight: 500;
+}
+
+/* PIE DE PÁGINA */
+
+footer {
+    background: #101e32;
+    color: #dce2ea;
+    text-align: center;
+    padding: 25px;
+    margin-top: 50px;
+    font-size: 13px;
+}
+
+/* DISEÑO RESPONSIVE */
+
+@media (max-width: 750px) {
+    .contenedor {
+        grid-template-columns: 1fr;
+        margin-top: 25px;
+    }
+
+    .hero h1 {
+        font-size: 28px;
+    }
+
+    .panel {
+        padding: 22px;
+    }
+}
+
+@media (max-width: 450px) {
+    .fila {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .metodos {
+        grid-template-columns: 1fr;
+    }
+
+    .hotel-header {
+        padding: 20px;
+    }
+
+    .logo {
+        font-size: 22px;
+    }
+
+    .hero {
+        padding: 40px 20px;
+    }
+}
+
+/* Mensajes del formulario de reservas */
+.mensaje {
+    margin-top: 14px;
+    padding: 12px;
+    border-radius: 8px;
+    line-height: 1.5;
+}
+.mensaje:empty {
+    display: none;
+}
+.mensaje.exito {
+    background: #e7f7ec;
+    color: #176534;
+    border: 1px solid #a8dfb8;
+}
+.mensaje.error {
+    background: #fff0f0;
+    color: #922b2b;
+    border: 1px solid #f0b3b3;
+}
+#datosTarjeta[hidden] {
+    display: none !important;
+}

@@ -1,0 +1,159 @@
+
+/* Reseteo básico para el Login */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --color-oscuro: #2C3E50;       
+    --color-texto: #555555;       
+    --color-dorado: #D4AF37;       
+    --fuente-base: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    font-family: var(--fuente-base);
+    background-color: #FFF;
+    color: var(--color-oscuro);
+    line-height: 1.6;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Contenedor General en Pantalla Dividida */
+.contenedor-login {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+}
+
+/* --- LADO IZQUIERDO: FORMULARIO --- */
+.seccion-formulario {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    background-color: #FFF;
+}
+
+.login-box {
+    width: 100%;
+    max-width: 400px;
+}
+
+.btn-volver {
+    display: inline-block;
+    font-size: 0.9rem;
+    color: var(--color-texto);
+    margin-bottom: 40px;
+    transition: color 0.3s ease;
+}
+
+.btn-volver:hover {
+    color: var(--color-dorado);
+}
+
+.titulo-login {
+    font-family: var(--fuente-titulos);
+    font-size: 2.2rem;
+    color: var(--color-oscuro);
+    margin-bottom: 10px;
+    font-weight: 400;
+}
+
+.subtitulo-login {
+    font-size: 1rem;
+    color: var(--color-texto);
+    margin-bottom: 35px;
+}
+
+/* Campos de entrada de datos */
+.grupo-input {
+    margin-bottom: 25px;
+}
+
+.grupo-input label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--color-oscuro);
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+}
+
+.grupo-input input {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #E2E8F0;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    outline: none;
+    background-color: #F8FAFC;
+    transition: all 0.3s ease;
+}
+
+.grupo-input input:focus {
+    border-color: var(--color-dorado);
+    background-color: #FFF;
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+}
+
+
+/* Botón de ingreso principal */
+.btn-login {
+    width: 100%;
+    background-color: var(--color-oscuro);
+    color: #FFF;
+    border: none;
+    padding: 14px;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.btn-login:hover {
+    background-color: var(--color-dorado);
+}
+
+/* --- LADO DERECHO: IMAGEN DE FONDO DE LUJO --- */
+.seccion-imagen-login {
+    flex: 1.2;
+    background: url('imagenes/descripcion.png') no-repeat center center/cover;
+    position: relative;
+}
+
+.overlay-imagen {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 60px;
+    background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0));
+    color: #FFF;
+}
+
+.overlay-imagen h3 {
+    font-family: var(--fuente-titulos);
+    font-size: 2rem;
+    margin-bottom: 10px;
+    font-weight: 400;
+}
+
+/* --- DISEÑO RESPONSIVO (MÓVILES) --- */
+@media (max-width: 900px) {
+    .seccion-imagen-login {
+        display: none; /* Oculta la imagen en celulares para optimizar espacio */
+    }
+    .seccion-formulario {
+        padding: 20px;
+    }
+}
