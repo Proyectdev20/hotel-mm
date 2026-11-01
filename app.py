@@ -56,7 +56,7 @@ def reserva():
 @app.route("/consultar-factura", methods=["GET", "POST"])
 def consultar_factura():
     if request.method == "POST":
-        codigo = request.form.get("codigo", "").strip().upper()
+        codigo = request.form.get("codigo", "").strip()
         if codigo:
             return redirect(url_for("ver_factura", codigo=codigo))
     return render_template("consultar_factura.html")
