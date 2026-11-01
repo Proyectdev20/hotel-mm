@@ -246,6 +246,113 @@ h3 {
     transform: translateY(-1px);
 }
 
+@media (max-width: 700px) {
+    body {
+        padding: 10px;
+    }
+
+    .actions-bar {
+        margin: 8px auto 14px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .btn-volver {
+        text-align: center;
+    }
+
+    .invoice-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .copy-btn,
+    .print-btn {
+        width: 100%;
+    }
+
+    .invoice-box {
+        padding: 24px 16px;
+        border-radius: 8px;
+    }
+
+    .customer-copy-badge {
+        position: static;
+        display: inline-block;
+        margin-bottom: 16px;
+    }
+
+    .header {
+        flex-direction: column;
+        gap: 14px;
+        margin-top: 0;
+        margin-bottom: 24px;
+    }
+
+    .company-details {
+        text-align: left;
+        font-size: 12px;
+    }
+
+    .company-logo {
+        font-size: 24px;
+    }
+
+    .details-container {
+        flex-direction: column;
+        gap: 24px;
+        margin-bottom: 26px;
+    }
+
+    .invoice-info {
+        text-align: left;
+    }
+
+    .invoice-title {
+        font-size: 23px;
+    }
+
+    .invoice-table {
+        display: block;
+        overflow-x: auto;
+        white-space: normal;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .invoice-table th,
+    .invoice-table td {
+        min-width: 92px;
+        padding: 10px 8px;
+        font-size: 12px;
+    }
+
+    .invoice-table .col-desc {
+        min-width: 210px;
+    }
+
+    .totals-container {
+        justify-content: stretch;
+        margin-bottom: 40px;
+    }
+
+    .totals-table {
+        width: 100%;
+    }
+
+    .signature-container {
+        flex-direction: column;
+        gap: 34px;
+        align-items: center;
+        margin-top: 40px;
+        padding: 0;
+    }
+
+    .signature-block {
+        width: min(100%, 240px);
+    }
+}
+
 /* ========================================================
    REGLAS DE SALIDA DE IMPRESIÓN (MEDIO FÍSICO)
    ======================================================== */

@@ -157,3 +157,27 @@ a {
         padding: 20px;
     }
 }
+
+@media (max-width: 480px) {
+    .contenedor-login {
+        min-height: 100dvh;
+        height: auto;
+    }
+
+    .seccion-formulario {
+        min-height: 100dvh;
+        padding: 24px 20px;
+    }
+
+    .btn-volver {
+        margin-bottom: 28px;
+    }
+
+    .titulo-login {
+        font-size: 1.85rem;
+    }
+
+    .subtitulo-login {
+        margin-bottom: 28px;
+    }
+}

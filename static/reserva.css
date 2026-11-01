@@ -345,6 +345,16 @@ footer {
 /* DISEÑO RESPONSIVE */
 
 @media (max-width: 750px) {
+    .hotel-header {
+        padding: 18px 20px;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .hotel-header .logo {
+        width: 100%;
+    }
+
     .contenedor {
         grid-template-columns: 1fr;
         margin-top: 25px;
@@ -379,6 +389,10 @@ footer {
 
     .hero {
         padding: 40px 20px;
+    }
+
+    .volver-header {
+        font-size: 14px;
     }
 }
 

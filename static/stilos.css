@@ -92,6 +92,15 @@ a {
     align-items: center;
     color: #FFF;
     text-align: center;
+    min-height: 540px;
+    height: 85vh;
+    }
+
+    .hero-content {
+    padding-top: 60px;
+    }
+
+    .hero-section {
     padding: 0 20px;
     background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5)), 
                 url('imagenes/final.png') no-repeat center center/cover;
@@ -367,6 +376,22 @@ a {
 
 /* RESPONSIVE */
 @media (max-width: 768px) {
+    .hotel-header {
+        position: absolute;
+        flex-wrap: wrap;
+        gap: 14px;
+        padding: 18px 20px;
+    }
+
+    .logo {
+        font-size: 1.25rem;
+    }
+
+    .btn-book-header {
+        padding: 9px 13px;
+        font-size: 0.78rem;
+    }
+
     .nav-menu {
         display: none;
     }
@@ -417,5 +442,29 @@ a {
 
     .titulo-final {
         font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 420px) {
+    .hotel-header {
+        justify-content: center;
+    }
+
+    .logo {
+        width: 100%;
+        text-align: center;
+    }
+
+    .btn-book-header {
+        flex: 1 1 140px;
+        text-align: center;
+    }
+
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+
+    .bloque-imagen img {
+        height: 250px;
     }
 }
