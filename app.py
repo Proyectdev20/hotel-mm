@@ -41,6 +41,17 @@ def conexion():
         port=os.environ.get("DB_PORT", "5432")
     )
 
+
+def asegurar_columna_habitacion(conn):
+    cur = conn.cursor()
+    cur.execute("""
+        ALTER TABLE reservas
+        ADD COLUMN IF NOT EXISTS tipo_habitacion VARCHAR(50)
+    """)
+    conn.commit()
+    cur.close()
+
+
 # =========================================
 # RUTAS HTML
 # =========================================
@@ -69,6 +80,7 @@ def login():
 
         conn = conexion()
         cur = conn.cursor()
+        asegurar_columna_habitacion(conn)
 
         cur.execute("""
             SELECT *
@@ -224,7 +236,6 @@ def guardar_reserva():
 
         conn = conexion()
         cur = conn.cursor()
-
         # 1. CLIENTE - Extrae el ID entero puro usando [0]
         cur.execute("""
             INSERT INTO clientes (nombre, documento, correo, telefono)
@@ -258,10 +269,16 @@ def guardar_reserva():
 
         # 3. RESERVA - Extrae el ID entero puro usando [0]
         cur.execute("""
-            INSERT INTO reservas (id_cliente, fecha_entrada, fecha_salida, cantidad_huespedes, total, estado)
-            VALUES (%s,%s,%s,%s,%s,%s)
+            INSERT INTO reservas (
+                id_cliente, fecha_entrada, fecha_salida, cantidad_huespedes,
+                total, estado, tipo_habitacion
+            )
+            VALUES (%s,%s,%s,%s,%s,%s,%s)
             RETURNING id_reserva
-        """, (id_cliente, datos["entrada"], datos["salida"], datos["personas"], precio_total, "Confirmada"))
+        """, (
+            id_cliente, datos["entrada"], datos["salida"], datos["personas"],
+            precio_total, "Confirmada", habitacion_recibida
+        ))
 
         id_reserva = cur.fetchone()[0]
 
@@ -304,7 +321,13 @@ def guardar_reserva():
 @administrador_requerido
 def listar_reservas():
     conn = conexion()
+    asegurar_columna_habitacion(conn)
     cur = conn.cursor()
+    nombres_habitacion = {
+        "350000": "Estándar",
+        "500000": "Deluxe",
+        "750000": "Suite presidencial"
+    }
 
     cur.execute("""
         SELECT
@@ -315,10 +338,18 @@ def listar_reservas():
             r.fecha_salida,
             r.cantidad_huespedes,
             r.total,
-            r.estado
+            r.estado,
+            r.tipo_habitacion,
+            f.codigo,
+            f.total,
+            p.metodo_pago
         FROM reservas r
         INNER JOIN clientes c
             ON r.id_cliente = c.id_cliente
+        LEFT JOIN facturas f
+            ON r.id_reserva = f.id_reserva
+        LEFT JOIN pagos p
+            ON r.id_reserva = p.id_reserva
         ORDER BY r.id_reserva DESC
     """)
 
@@ -334,7 +365,13 @@ def listar_reservas():
             "salida": str(fila[4]),
             "personas": fila[5],
             "total": float(fila[6]),
-            "estado": fila[7]
+            "estado": fila[7],
+            "habitacion": nombres_habitacion.get(
+                str(fila[8]), fila[8]
+            ) if fila[8] else "No registrada",
+            "factura_codigo": fila[9],
+            "factura_total": float(fila[10]) if fila[10] is not None else None,
+            "metodo_pago": fila[11] or "No especificado"
         })
 
     cur.close()
