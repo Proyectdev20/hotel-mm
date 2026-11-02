@@ -1,5 +1,14 @@
 document.addEventListener("DOMContentLoaded", cargarReservas);
 
+function escaparHTML(valor) {
+    return String(valor)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
 async function cargarReservas() {
 
     try {
@@ -25,14 +34,19 @@ async function cargarReservas() {
 
             tabla.innerHTML += `
             <tr>
-                <td>${reserva.id}</td>
-                <td>${reserva.nombre}</td>
-                <td>${reserva.documento}</td>
-                <td>${reserva.entrada}</td>
-                <td>${reserva.salida}</td>
-                <td>${reserva.personas}</td>
+                <td>${escaparHTML(reserva.id)}</td>
+                <td>${escaparHTML(reserva.nombre)}</td>
+                <td>${escaparHTML(reserva.documento)}</td>
+                <td>${escaparHTML(reserva.entrada)}</td>
+                <td>${escaparHTML(reserva.salida)}</td>
+                <td>${escaparHTML(reserva.personas)}</td>
+                <td>${escaparHTML(reserva.habitacion)}</td>
+                <td>${reserva.factura_codigo
+                    ? `<a href="/factura/${encodeURIComponent(reserva.factura_codigo)}" target="_blank" rel="noopener">${escaparHTML(reserva.factura_codigo)}</a>`
+                    : "Sin factura"}</td>
+                <td>${escaparHTML(reserva.metodo_pago)}</td>
                 <td>Gs. ${Number(reserva.total).toLocaleString("es-PY")}</td>
-                <td>${reserva.estado}</td>
+                <td>${escaparHTML(reserva.estado)}</td>
             </tr>
             `;
         });
@@ -53,7 +67,7 @@ async function cargarReservas() {
 
         document.getElementById("tablaReservas").innerHTML = `
             <tr>
-                <td colspan="8">
+                <td colspan="11">
                     Error al cargar reservas
                 </td>
             </tr>

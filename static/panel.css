@@ -113,6 +113,16 @@ th,td{
     text-align: left;
 }
 
+td a{
+    color: #1d5fa7;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+td a:hover{
+    text-decoration: underline;
+}
+
 tbody tr:hover{
     background: #f9fafb;
 }
@@ -184,7 +194,7 @@ tbody tr:hover{
 
     table{
         font-size: 14px;
-        min-width: 760px;
+        min-width: 1100px;
     }
 
     th,td{

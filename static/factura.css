@@ -156,30 +156,6 @@ h3 {
     color: #9b762f;
 }
 
-.signature-container {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 70px;
-    margin-bottom: 40px;
-    padding: 0 30px;
-}
-
-.signature-block {
-    text-align: center;
-    width: 240px;
-}
-
-.signature-line {
-    border-bottom: 1px solid #65717e;
-    margin-bottom: 8px;
-}
-
-.signature-block p {
-    font-size: 12px;
-    color: var(--color-hotel-oscuro);
-    margin: 0;
-}
-
 .footer-notes {
     font-size: 11px;
     color: #65717e;
@@ -340,17 +316,6 @@ h3 {
         width: 100%;
     }
 
-    .signature-container {
-        flex-direction: column;
-        gap: 34px;
-        align-items: center;
-        margin-top: 40px;
-        padding: 0;
-    }
-
-    .signature-block {
-        width: min(100%, 240px);
-    }
 }
 
 /* ========================================================
@@ -372,8 +337,8 @@ h3 {
 
     .actions-bar { display: none; }
 
-    .totals-container, .signature-container {
-        page-break-inside: avoid; /* No fragmenta las firmas en hojas distintas */
+    .totals-container {
+        page-break-inside: avoid;
     }
 
     * {
