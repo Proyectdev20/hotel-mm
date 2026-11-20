@@ -230,33 +230,6 @@ h3 {
     color: #65717e;
 }
 
-.metodos-saldo {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin: 18px 0;
-    padding: 14px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-}
-
-.metodos-saldo legend {
-    padding: 0 6px;
-    font-weight: bold;
-    color: var(--color-hotel-oscuro);
-}
-
-.metodo-saldo {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    cursor: pointer;
-}
-
-.metodo-saldo input {
-    width: auto;
-}
-
 .saldo-pago input[type="text"],
 .saldo-pago input[type="password"] {
     display: block;
@@ -268,18 +241,6 @@ h3 {
     font: inherit;
 }
 
-.fila-saldo {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-}
-
-@media (max-width: 500px) {
-    .fila-saldo {
-        grid-template-columns: 1fr;
-        gap: 0;
-    }
-}
 
 /* Interfaz Web - Acciones */
 .actions-bar {

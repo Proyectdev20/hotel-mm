@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pagar saldo | Hotel MM</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='reserva.css', v='3') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='factura.css', v='4') }}">
 </head>
 <body>
@@ -22,26 +23,26 @@
               action="{{ url_for('simular_pago_saldo', codigo=factura_codigo) }}">
             <h2>Saldo restante</h2>
             <p class="monto-saldo">Gs. {{ "{:,}".format(saldo_monto|int).replace(',', '.') }}</p>
-            <fieldset class="metodos-saldo">
-                <legend>Selecciona la forma de pago</legend>
-                <label class="metodo-saldo">
+            <h2>Método de pago</h2>
+            <div class="metodos">
+                <label class="metodo">
                     <input type="radio" name="metodoPagoSaldo"
                            value="Transferencia bancaria" checked>
-                    Transferencia bancaria
+                    Transferencia
                 </label>
-                <label class="metodo-saldo">
+                <label class="metodo">
                     <input type="radio" name="metodoPagoSaldo"
                            value="Tarjeta de crédito">
                     Tarjeta de crédito
                 </label>
-                <label class="metodo-saldo">
+                <label class="metodo">
                     <input type="radio" name="metodoPagoSaldo"
                            value="Tarjeta de débito">
                     Tarjeta de débito
                 </label>
-            </fieldset>
+            </div>
 
-            <div id="datosTransferenciaSaldo">
+            <div id="datosTransferenciaSaldo" class="datos-transferencia">
                 <p>Realiza una transferencia por el monto exacto:</p>
                 <p><strong>Banco:</strong> Banco Familiar</p>
                 <p><strong>Titular:</strong> HotelMM2026</p>
@@ -55,32 +56,37 @@
                 <p class="aviso-pago">El saldo aparecerá como pagado cuando el hotel confirme la transferencia.</p>
             </div>
 
-            {% if demo_payment_enabled %}
-            <div id="datosTarjetaSaldo" hidden>
-                <p class="aviso-pago">Demostración académica: estos campos no se envían ni guardan y no realizan un cobro real.</p>
-                <label for="numeroTarjetaSaldo">Número de tarjeta</label>
-                <input id="numeroTarjetaSaldo" type="text"
-                       placeholder="1234 5678 9012 3456" inputmode="numeric"
-                       maxlength="19" autocomplete="off">
-                <div class="fila-saldo">
-                    <div>
+            <div id="datosTarjetaSaldo" class="datos-tarjeta" hidden>
+                <h3>Datos de la tarjeta</h3>
+                <p class="nota">Estos campos son de demostración y no se envían ni guardan. No ingreses datos reales.</p>
+                <div class="campo">
+                    <label for="titularTarjetaSaldo">Titular de la tarjeta</label>
+                    <input id="titularTarjetaSaldo" type="text"
+                           placeholder="Nombre del titular" autocomplete="off">
+                </div>
+                <div class="campo">
+                    <label for="numeroTarjetaSaldo">Número de tarjeta</label>
+                    <input id="numeroTarjetaSaldo" type="text"
+                           placeholder="1234 5678 9012 3456" inputmode="numeric"
+                           maxlength="19" autocomplete="off">
+                </div>
+                <div class="fila">
+                    <div class="campo">
                         <label for="vencimientoTarjetaSaldo">Vencimiento</label>
                         <input id="vencimientoTarjetaSaldo" type="text"
                                placeholder="MM/AA" maxlength="5" autocomplete="off">
                     </div>
-                    <div>
-                        <label for="cvvTarjetaSaldo">CVV</label>
+                    <div class="campo">
+                        <label for="cvvTarjetaSaldo">Código de seguridad (CVV)</label>
                         <input id="cvvTarjetaSaldo" type="password"
                                placeholder="123" inputmode="numeric"
                                maxlength="4" autocomplete="off">
                     </div>
                 </div>
             </div>
-            {% else %}
             <p id="avisoTarjetaSaldo" class="aviso-pago" hidden>
-                El pago con tarjeta no está conectado a una pasarela. Por ahora, selecciona transferencia bancaria.
+                El pago con tarjeta es solo demostrativo; no hay una pasarela conectada.
             </p>
-            {% endif %}
 
             {% if demo_payment_enabled %}
             <p class="aviso-pago">Al continuar, el sistema marcará el saldo como pagado solo para la demostración.</p>
@@ -104,11 +110,13 @@
         const datosTransferenciaSaldo = document.getElementById("datosTransferenciaSaldo");
         const datosTarjetaSaldo = document.getElementById("datosTarjetaSaldo");
         const avisoTarjetaSaldo = document.getElementById("avisoTarjetaSaldo");
+        const demoPaymentEnabled = {{ demo_payment_enabled|tojson }};
         const camposTarjetaSaldo = [
+            document.getElementById("titularTarjetaSaldo"),
             document.getElementById("numeroTarjetaSaldo"),
             document.getElementById("vencimientoTarjetaSaldo"),
             document.getElementById("cvvTarjetaSaldo")
-        ].filter(Boolean);
+        ];
 
         function actualizarMetodoSaldo() {
             const metodo = document.querySelector('input[name="metodoPagoSaldo"]:checked').value;
@@ -116,16 +124,12 @@
             const esTarjeta = metodo === "Tarjeta de crédito" || metodo === "Tarjeta de débito";
 
             datosTransferenciaSaldo.hidden = !esTransferencia;
-            if (datosTarjetaSaldo) {
-                datosTarjetaSaldo.hidden = !esTarjeta;
-                camposTarjetaSaldo.forEach(campo => {
-                    campo.required = esTarjeta;
-                    if (!esTarjeta) campo.value = "";
-                });
-            }
-            if (avisoTarjetaSaldo) {
-                avisoTarjetaSaldo.hidden = !esTarjeta;
-            }
+            datosTarjetaSaldo.hidden = !esTarjeta;
+            camposTarjetaSaldo.forEach(campo => {
+                campo.required = esTarjeta && demoPaymentEnabled;
+                if (!esTarjeta) campo.value = "";
+            });
+            avisoTarjetaSaldo.hidden = !esTarjeta || demoPaymentEnabled;
         }
 
         metodosPagoSaldo.forEach(metodo => {
@@ -138,6 +142,13 @@
             numeroTarjetaSaldo.addEventListener("input", () => {
                 const numeros = numeroTarjetaSaldo.value.replace(/\D/g, "").slice(0, 16);
                 numeroTarjetaSaldo.value = numeros.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
+            });
+        }
+
+        const titularTarjetaSaldo = document.getElementById("titularTarjetaSaldo");
+        if (titularTarjetaSaldo) {
+            titularTarjetaSaldo.addEventListener("input", () => {
+                titularTarjetaSaldo.value = titularTarjetaSaldo.value.replace(/[0-9]/g, "");
             });
         }
 
