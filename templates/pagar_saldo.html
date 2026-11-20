@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagar saldo | Hotel MM</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='factura.css', v='3') }}">
+</head>
+<body>
+    <div class="actions-bar">
+        <a href="{{ url_for('ver_factura', codigo=factura_codigo) }}" class="btn-volver">← Volver a la factura</a>
+    </div>
+
+    <main class="invoice-box">
+        <div class="company-logo">HOTEL MM</div>
+        <h1 class="invoice-title">Pagar monto restante</h1>
+        <p><strong>Nº de factura:</strong> {{ factura_codigo }}</p>
+
+        {% if saldo_monto > 0 %}
+        <section class="saldo-pago">
+            <h2>Saldo a transferir</h2>
+            <p class="monto-saldo">Gs. {{ "{:,}".format(saldo_monto|int).replace(',', '.') }}</p>
+            <p>Realiza una transferencia por el monto exacto:</p>
+            <p><strong>Banco:</strong> Banco Familiar</p>
+            <p><strong>Titular:</strong> HotelMM2026</p>
+            <p><strong>Alias:</strong> <span id="aliasTransferencia">hotelmm2026</span></p>
+            <button id="copiarAlias" class="copy-btn" type="button">Copiar alias</button>
+            <span id="estadoCopiado" role="status" aria-live="polite"></span>
+            <p>Luego envía el comprobante a
+                <a href="mailto:info@hotelmm.com?subject=Comprobante%20de%20pago%20{{ factura_codigo }}">info@hotelmm.com</a>,
+                indicando el número de factura.
+            </p>
+            <p class="aviso-pago">El saldo aparecerá como pagado cuando el hotel confirme la transferencia.</p>
+        </section>
+        {% elif monto_pendiente > 0 %}
+        <section class="saldo-pago">
+            <h2>Pago pendiente de verificación</h2>
+            <p>Ya no queda un saldo adicional por transferir. El hotel debe confirmar el pago de Gs. {{ "{:,}".format(monto_pendiente|int).replace(',', '.') }}.</p>
+        </section>
+        {% else %}
+        <p class="paid-badge">La factura ya está pagada totalmente.</p>
+        {% endif %}
+
+        <a href="{{ url_for('ver_factura', codigo=factura_codigo) }}" class="pay-balance-btn">Volver a la factura</a>
+    </main>
+
+    <script>
+        const copiarAlias = document.getElementById("copiarAlias");
+        if (copiarAlias) {
+            copiarAlias.addEventListener("click", async () => {
+                const estado = document.getElementById("estadoCopiado");
+                try {
+                    await navigator.clipboard.writeText(
+                        document.getElementById("aliasTransferencia").textContent
+                    );
+                    estado.textContent = " Alias copiado.";
+                } catch (error) {
+                    estado.textContent = " No se pudo copiar. Copia el alias manualmente.";
+                    console.error("No se pudo copiar el alias:", error);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

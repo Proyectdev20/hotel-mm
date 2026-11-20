@@ -213,6 +213,53 @@ def ver_factura(codigo):
         return "Ocurrió un error interno al procesar la factura.", 500
 
 
+@app.route("/factura/<codigo>/pagar-saldo")
+def pagar_saldo(codigo):
+    try:
+        conn = conexion()
+        asegurar_columna_estado_pago(conn)
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT
+                f.total,
+                COALESCE(p.monto_pagado, 0),
+                COALESCE(p.monto_pendiente, 0)
+            FROM facturas f
+            INNER JOIN reservas r ON f.id_reserva = r.id_reserva
+            LEFT JOIN (
+                SELECT
+                    id_reserva,
+                    SUM(monto) FILTER (WHERE estado = 'Confirmado') AS monto_pagado,
+                    SUM(monto) FILTER (WHERE estado = 'Pendiente') AS monto_pendiente
+                FROM pagos
+                GROUP BY id_reserva
+            ) p ON r.id_reserva = p.id_reserva
+            WHERE f.codigo = %s
+        """, (codigo,))
+        datos = cur.fetchone()
+        cur.close()
+        conn.close()
+
+        if not datos:
+            return render_template(
+                "consultar_factura.html",
+                codigo=codigo,
+                error="No encontramos una factura con ese código. Revísalo e inténtalo nuevamente."
+            ), 404
+
+        total, pagado, pendiente = (float(valor or 0) for valor in datos)
+        saldo = max(0, total - pagado - pendiente)
+        return render_template(
+            "pagar_saldo.html",
+            factura_codigo=codigo,
+            saldo_monto=saldo,
+            monto_pendiente=pendiente
+        )
+    except Exception as e:
+        print("Error al consultar el saldo de la factura:", e)
+        return "Ocurrió un error interno al consultar el saldo.", 500
+
+
 # =========================================
 # DATOS DE SOLO LECTURA PARA EL PANEL
 # =========================================
