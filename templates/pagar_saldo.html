@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pagar saldo | Hotel MM</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='factura.css', v='3') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='factura.css', v='4') }}">
 </head>
 <body>
     <div class="actions-bar">
@@ -17,21 +17,76 @@
         <p><strong>Nº de factura:</strong> {{ factura_codigo }}</p>
 
         {% if saldo_monto > 0 %}
-        <section class="saldo-pago">
-            <h2>Saldo a transferir</h2>
+        <form id="formaPagoSaldo" class="saldo-pago"
+              method="post"
+              action="{{ url_for('simular_pago_saldo', codigo=factura_codigo) }}">
+            <h2>Saldo restante</h2>
             <p class="monto-saldo">Gs. {{ "{:,}".format(saldo_monto|int).replace(',', '.') }}</p>
-            <p>Realiza una transferencia por el monto exacto:</p>
-            <p><strong>Banco:</strong> Banco Familiar</p>
-            <p><strong>Titular:</strong> HotelMM2026</p>
-            <p><strong>Alias:</strong> <span id="aliasTransferencia">hotelmm2026</span></p>
-            <button id="copiarAlias" class="copy-btn" type="button">Copiar alias</button>
-            <span id="estadoCopiado" role="status" aria-live="polite"></span>
-            <p>Luego envía el comprobante a
-                <a href="mailto:info@hotelmm.com?subject=Comprobante%20de%20pago%20{{ factura_codigo }}">info@hotelmm.com</a>,
-                indicando el número de factura.
+            <fieldset class="metodos-saldo">
+                <legend>Selecciona la forma de pago</legend>
+                <label class="metodo-saldo">
+                    <input type="radio" name="metodoPagoSaldo"
+                           value="Transferencia bancaria" checked>
+                    Transferencia bancaria
+                </label>
+                <label class="metodo-saldo">
+                    <input type="radio" name="metodoPagoSaldo"
+                           value="Tarjeta de crédito">
+                    Tarjeta de crédito
+                </label>
+                <label class="metodo-saldo">
+                    <input type="radio" name="metodoPagoSaldo"
+                           value="Tarjeta de débito">
+                    Tarjeta de débito
+                </label>
+            </fieldset>
+
+            <div id="datosTransferenciaSaldo">
+                <p>Realiza una transferencia por el monto exacto:</p>
+                <p><strong>Banco:</strong> Banco Familiar</p>
+                <p><strong>Titular:</strong> HotelMM2026</p>
+                <p><strong>Alias:</strong> <span id="aliasTransferencia">hotelmm2026</span></p>
+                <button id="copiarAlias" class="copy-btn" type="button">Copiar alias</button>
+                <span id="estadoCopiado" role="status" aria-live="polite"></span>
+                <p>Luego envía el comprobante a
+                    <a href="mailto:info@hotelmm.com?subject=Comprobante%20de%20pago%20{{ factura_codigo }}">info@hotelmm.com</a>,
+                    indicando el número de factura.
+                </p>
+                <p class="aviso-pago">El saldo aparecerá como pagado cuando el hotel confirme la transferencia.</p>
+            </div>
+
+            {% if demo_payment_enabled %}
+            <div id="datosTarjetaSaldo" hidden>
+                <p class="aviso-pago">Demostración académica: estos campos no se envían ni guardan y no realizan un cobro real.</p>
+                <label for="numeroTarjetaSaldo">Número de tarjeta</label>
+                <input id="numeroTarjetaSaldo" type="text"
+                       placeholder="1234 5678 9012 3456" inputmode="numeric"
+                       maxlength="19" autocomplete="off">
+                <div class="fila-saldo">
+                    <div>
+                        <label for="vencimientoTarjetaSaldo">Vencimiento</label>
+                        <input id="vencimientoTarjetaSaldo" type="text"
+                               placeholder="MM/AA" maxlength="5" autocomplete="off">
+                    </div>
+                    <div>
+                        <label for="cvvTarjetaSaldo">CVV</label>
+                        <input id="cvvTarjetaSaldo" type="password"
+                               placeholder="123" inputmode="numeric"
+                               maxlength="4" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <p id="avisoTarjetaSaldo" class="aviso-pago" hidden>
+                El pago con tarjeta no está conectado a una pasarela. Por ahora, selecciona transferencia bancaria.
             </p>
-            <p class="aviso-pago">El saldo aparecerá como pagado cuando el hotel confirme la transferencia.</p>
-        </section>
+            {% endif %}
+
+            {% if demo_payment_enabled %}
+            <p class="aviso-pago">Al continuar, el sistema marcará el saldo como pagado solo para la demostración.</p>
+            <button class="pay-balance-btn" type="submit">Simular pago del saldo</button>
+            {% endif %}
+        </form>
         {% elif monto_pendiente > 0 %}
         <section class="saldo-pago">
             <h2>Pago pendiente de verificación</h2>
@@ -45,6 +100,64 @@
     </main>
 
     <script>
+        const metodosPagoSaldo = document.querySelectorAll('input[name="metodoPagoSaldo"]');
+        const datosTransferenciaSaldo = document.getElementById("datosTransferenciaSaldo");
+        const datosTarjetaSaldo = document.getElementById("datosTarjetaSaldo");
+        const avisoTarjetaSaldo = document.getElementById("avisoTarjetaSaldo");
+        const camposTarjetaSaldo = [
+            document.getElementById("numeroTarjetaSaldo"),
+            document.getElementById("vencimientoTarjetaSaldo"),
+            document.getElementById("cvvTarjetaSaldo")
+        ].filter(Boolean);
+
+        function actualizarMetodoSaldo() {
+            const metodo = document.querySelector('input[name="metodoPagoSaldo"]:checked').value;
+            const esTransferencia = metodo === "Transferencia bancaria";
+            const esTarjeta = metodo === "Tarjeta de crédito" || metodo === "Tarjeta de débito";
+
+            datosTransferenciaSaldo.hidden = !esTransferencia;
+            if (datosTarjetaSaldo) {
+                datosTarjetaSaldo.hidden = !esTarjeta;
+                camposTarjetaSaldo.forEach(campo => {
+                    campo.required = esTarjeta;
+                    if (!esTarjeta) campo.value = "";
+                });
+            }
+            if (avisoTarjetaSaldo) {
+                avisoTarjetaSaldo.hidden = !esTarjeta;
+            }
+        }
+
+        metodosPagoSaldo.forEach(metodo => {
+            metodo.addEventListener("change", actualizarMetodoSaldo);
+        });
+        if (metodosPagoSaldo.length) actualizarMetodoSaldo();
+
+        const numeroTarjetaSaldo = document.getElementById("numeroTarjetaSaldo");
+        if (numeroTarjetaSaldo) {
+            numeroTarjetaSaldo.addEventListener("input", () => {
+                const numeros = numeroTarjetaSaldo.value.replace(/\D/g, "").slice(0, 16);
+                numeroTarjetaSaldo.value = numeros.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
+            });
+        }
+
+        const vencimientoTarjetaSaldo = document.getElementById("vencimientoTarjetaSaldo");
+        if (vencimientoTarjetaSaldo) {
+            vencimientoTarjetaSaldo.addEventListener("input", () => {
+                const numeros = vencimientoTarjetaSaldo.value.replace(/\D/g, "").slice(0, 4);
+                vencimientoTarjetaSaldo.value = numeros.length > 2
+                    ? `${numeros.slice(0, 2)}/${numeros.slice(2)}`
+                    : numeros;
+            });
+        }
+
+        const cvvTarjetaSaldo = document.getElementById("cvvTarjetaSaldo");
+        if (cvvTarjetaSaldo) {
+            cvvTarjetaSaldo.addEventListener("input", () => {
+                cvvTarjetaSaldo.value = cvvTarjetaSaldo.value.replace(/\D/g, "").slice(0, 4);
+            });
+        }
+
         const copiarAlias = document.getElementById("copiarAlias");
         if (copiarAlias) {
             copiarAlias.addEventListener("click", async () => {

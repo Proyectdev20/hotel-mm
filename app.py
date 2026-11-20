@@ -14,6 +14,7 @@ import psycopg2
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("HOTEL_SECRET_KEY", "hotel-mm-development-key")
+DEMO_PAYMENT_ENABLED = os.environ.get("DEMO_PAYMENT_ENABLED", "false").strip().lower() == "true"
 
 
 def administrador_requerido(vista):
@@ -253,11 +254,85 @@ def pagar_saldo(codigo):
             "pagar_saldo.html",
             factura_codigo=codigo,
             saldo_monto=saldo,
-            monto_pendiente=pendiente
+            monto_pendiente=pendiente,
+            demo_payment_enabled=DEMO_PAYMENT_ENABLED
         )
     except Exception as e:
         print("Error al consultar el saldo de la factura:", e)
         return "Ocurrió un error interno al consultar el saldo.", 500
+
+
+@app.route("/factura/<codigo>/pagar-saldo/demo", methods=["POST"])
+def simular_pago_saldo(codigo):
+    if not DEMO_PAYMENT_ENABLED:
+        return "La simulación de pagos está deshabilitada.", 404
+
+    metodo_pago = request.form.get("metodoPagoSaldo", "")
+    metodos_demo = {
+        "Tarjeta de crédito",
+        "Tarjeta de débito",
+        "Transferencia bancaria"
+    }
+    if metodo_pago not in metodos_demo:
+        return "Selecciona un método de pago válido.", 400
+
+    conn = conexion()
+    asegurar_columna_estado_pago(conn)
+    cur = conn.cursor()
+
+    try:
+        cur.execute("""
+            SELECT r.id_reserva, r.total
+            FROM facturas f
+            INNER JOIN reservas r ON f.id_reserva = r.id_reserva
+            WHERE f.codigo = %s
+            FOR UPDATE OF r
+        """, (codigo,))
+        reserva = cur.fetchone()
+        if not reserva:
+            conn.rollback()
+            return "La factura solicitada no existe.", 404
+
+        id_reserva, total = reserva
+        cur.execute("""
+            SELECT
+                COALESCE(SUM(monto) FILTER (WHERE estado = 'Confirmado'), 0),
+                COALESCE(SUM(monto) FILTER (WHERE estado = 'Pendiente'), 0)
+            FROM pagos
+            WHERE id_reserva = %s
+        """, (id_reserva,))
+        pagado, pendiente = cur.fetchone()
+        saldo = max(0, total - pagado - pendiente)
+
+        cur.execute("""
+            UPDATE pagos
+            SET estado = 'Confirmado'
+            WHERE id_reserva = %s AND estado = 'Pendiente'
+        """, (id_reserva,))
+        if saldo > 0:
+            cur.execute("""
+                INSERT INTO pagos (id_reserva, metodo_pago, monto, estado)
+                VALUES (%s, %s, %s, %s)
+            """, (
+                id_reserva,
+                f"Demostración: {metodo_pago}",
+                saldo,
+                "Confirmado"
+            ))
+
+        cur.execute(
+            "UPDATE reservas SET estado = %s WHERE id_reserva = %s",
+            ("Confirmada", id_reserva)
+        )
+        conn.commit()
+        return redirect(url_for("ver_factura", codigo=codigo))
+    except Exception as e:
+        conn.rollback()
+        print("Error al simular el pago de demostración:", e)
+        return "No se pudo completar la simulación del pago.", 500
+    finally:
+        cur.close()
+        conn.close()
 
 
 # =========================================
