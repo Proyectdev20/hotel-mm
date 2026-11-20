@@ -175,6 +175,21 @@ h3 {
     line-height: 1.7;
 }
 
+.pago-saldo-page {
+    min-height: calc(100vh - 120px);
+    display: flex;
+    flex-direction: column;
+}
+
+.pago-saldo-form {
+    width: 100%;
+    max-width: none;
+    margin: 20px 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
 .pay-balance-btn {
     display: block;
     width: fit-content;
@@ -192,6 +207,10 @@ h3 {
 
 .pay-balance-btn:hover {
     background: #263f5c;
+}
+
+.pago-saldo-form > .pay-balance-btn {
+    margin-top: auto;
 }
 
 .saldo-pago h3 {

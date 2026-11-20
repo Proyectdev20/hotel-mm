@@ -5,20 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pagar saldo | Hotel MM</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='reserva.css', v='3') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='factura.css', v='4') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='factura.css', v='5') }}">
 </head>
 <body>
     <div class="actions-bar">
         <a href="{{ url_for('ver_factura', codigo=factura_codigo) }}" class="btn-volver">← Volver a la factura</a>
     </div>
 
-    <main class="invoice-box">
+    <main class="invoice-box pago-saldo-page">
         <div class="company-logo">HOTEL MM</div>
         <h1 class="invoice-title">Pagar monto restante</h1>
         <p><strong>Nº de factura:</strong> {{ factura_codigo }}</p>
 
         {% if saldo_monto > 0 %}
-        <form id="formaPagoSaldo" class="saldo-pago"
+        <form id="formaPagoSaldo" class="saldo-pago pago-saldo-form"
               method="post"
               action="{{ url_for('simular_pago_saldo', codigo=factura_codigo) }}">
             <h2>Saldo restante</h2>
@@ -90,7 +90,7 @@
 
             {% if demo_payment_enabled %}
             <p class="aviso-pago">Al continuar, el sistema marcará el saldo como pagado solo para la demostración.</p>
-            <button class="pay-balance-btn" type="submit">Simular pago del saldo</button>
+            <button class="pay-balance-btn" type="submit">Confirmar pago y ver factura</button>
             {% endif %}
         </form>
         {% elif monto_pendiente > 0 %}
