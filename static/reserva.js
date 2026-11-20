@@ -373,8 +373,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify(datosPayload)
             });
 
+            const resultado = await respuesta.json();
             if (respuesta.ok) {
-                const resultado = await respuesta.json();
                 if (mensaje) {
                     const urlFactura = `/factura/${encodeURIComponent(resultado.codigo)}`;
                     mensaje.innerHTML = `✅ Reserva registrada. El pago queda pendiente de verificación por el hotel. 
@@ -392,11 +392,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 const urlFactura = `/factura/${encodeURIComponent(resultado.codigo)}`;
                 window.location.href = urlFactura;
             } else {
-                alert("Error en el servidor al intentar registrar la reserva.");
+                throw new Error(
+                    resultado.error || `Error del servidor (${respuesta.status})`
+                );
             }
         } catch (error) {
             console.error("Error de comunicación:", error);
-            alert("No se pudo conectar con el servidor del hotel.");
+            alert(error instanceof TypeError
+                ? "No se pudo conectar con el servidor del hotel."
+                : error.message);
         }
     });
 

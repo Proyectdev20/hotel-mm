@@ -323,13 +323,7 @@ def guardar_reserva():
 
         monto_pagado = precio_total if tipo_pago == "total" else round(precio_total * 0.50)
         saldo_pendiente = precio_total - monto_pagado
-        estado_reserva = (
-            "Pago pendiente de verificación"
-            if saldo_pendiente == 0
-            else "Anticipo pendiente de verificación"
-        )
-        if saldo_en_hotel and saldo_pendiente > 0:
-            estado_reserva = "Anticipo pendiente; saldo en hotel"
+        estado_reserva = "Confirmada"
 
         # 3. RESERVA - Extrae el ID entero puro usando [0]
         cur.execute("""
