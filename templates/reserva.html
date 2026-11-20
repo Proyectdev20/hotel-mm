@@ -8,10 +8,10 @@
     <title>Reservas y Pagos | Hotel MM</title>
 
     <link rel="stylesheet"
-          href="{{ url_for('static', filename='reserva.css', v='2') }}">
+          href="{{ url_for('static', filename='reserva.css', v='3') }}">
 
     <script
-        src="{{ url_for('static', filename='reserva.js', v='5') }}"
+        src="{{ url_for('static', filename='reserva.js', v='6') }}"
         defer>
     </script>
 
@@ -201,10 +201,6 @@
                         Pago en el hotel
                     </label>
                 </div>
-                <p class="nota">
-                    Este formulario no procesa cobros con tarjeta. Los pagos deben confirmarse con el hotel.
-                </p>
-
                 <div id="opcionesFormaPago" hidden>
                     <h3 class="seccion-titulo">¿Cuánto deseas pagar ahora?</h3>
 
@@ -246,6 +242,41 @@
                     <button id="copiarAlias" class="btn-copiar-alias" type="button">Copiar alias</button>
                     <span id="estadoCopiado" role="status" aria-live="polite"></span>
                     <p class="nota">Una vez realizada la transferencia, conserva el comprobante.</p>
+                </section>
+
+                <section id="datosTarjeta" class="datos-tarjeta" hidden aria-labelledby="tituloDatosTarjeta">
+                    <h3 id="tituloDatosTarjeta">Tarjeta para la demostración</h3>
+                    <p class="nota">
+                        Proyecto universitario: usa únicamente datos ficticios. No ingreses una tarjeta real. Estos campos son una demostración y no se envían ni guardan.
+                    </p>
+                    <div class="campo">
+                        <label for="numeroTarjeta">Número de tarjeta de prueba</label>
+                        <input id="numeroTarjeta"
+                               type="text"
+                               placeholder="0000 0000 0000 0000"
+                               inputmode="numeric"
+                               maxlength="19"
+                               autocomplete="off">
+                    </div>
+                    <div class="fila">
+                        <div class="campo">
+                            <label for="vencimientoTarjeta">Vencimiento de prueba</label>
+                            <input id="vencimientoTarjeta"
+                                   type="text"
+                                   placeholder="MM/AA"
+                                   maxlength="5"
+                                   autocomplete="off">
+                        </div>
+                        <div class="campo">
+                            <label for="cvvTarjeta">CVV ficticio</label>
+                            <input id="cvvTarjeta"
+                                   type="password"
+                                   placeholder="000"
+                                   inputmode="numeric"
+                                   maxlength="4"
+                                   autocomplete="off">
+                        </div>
+                    </div>
                 </section>
 
                 <button type="submit" class="btn">

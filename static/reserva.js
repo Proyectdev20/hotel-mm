@@ -20,6 +20,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const habitacion = porId("habitacion");
     const personas = porId("personas");
     const mensaje = porId("mensaje");
+    const datosTarjeta = porId("datosTarjeta");
+    const numeroTarjeta = porId("numeroTarjeta");
+    const vencimientoTarjeta = porId("vencimientoTarjeta");
+    const cvvTarjeta = porId("cvvTarjeta");
     const opcionesFormaPago = porId("opcionesFormaPago");
     const opcionPagoTotal = porId("opcionPagoTotal");
     const avisoPagoHotel = porId("avisoPagoHotel");
@@ -214,6 +218,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const usaTransferencia =
             metodoParaAnticipo === "Transferencia bancaria";
+        const usaTarjeta =
+            metodoParaAnticipo === "Tarjeta de crédito" ||
+            metodoParaAnticipo === "Tarjeta de débito";
 
         const opcionTotal =
             form.querySelector('input[name="tipo_pago"][value="total"]');
@@ -233,6 +240,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         datosTransferencia.hidden = !usaTransferencia;
+        datosTarjeta.hidden = !usaTarjeta;
+        [numeroTarjeta, vencimientoTarjeta, cvvTarjeta].forEach(campo => {
+            campo.required = usaTarjeta;
+            if (!usaTarjeta) campo.value = "";
+        });
 
         actualizarResumen();
     }
@@ -273,6 +285,22 @@ document.addEventListener("DOMContentLoaded", () => {
         "change",
         mostrarCamposPago
     );
+
+    numeroTarjeta.addEventListener("input", () => {
+        const numeros = numeroTarjeta.value.replace(/\D/g, "").slice(0, 16);
+        numeroTarjeta.value = numeros.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
+    });
+
+    vencimientoTarjeta.addEventListener("input", () => {
+        const numeros = vencimientoTarjeta.value.replace(/\D/g, "").slice(0, 4);
+        vencimientoTarjeta.value = numeros.length > 2
+            ? `${numeros.slice(0, 2)}/${numeros.slice(2)}`
+            : numeros;
+    });
+
+    cvvTarjeta.addEventListener("input", () => {
+        cvvTarjeta.value = cvvTarjeta.value.replace(/\D/g, "").slice(0, 4);
+    });
 
     copiarAlias.addEventListener("click", async () => {
         try {
