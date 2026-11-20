@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const personas = porId("personas");
     const mensaje = porId("mensaje");
     const datosTarjeta = porId("datosTarjeta");
+    const titularTarjeta = porId("titularTarjeta");
     const numeroTarjeta = porId("numeroTarjeta");
     const vencimientoTarjeta = porId("vencimientoTarjeta");
     const cvvTarjeta = porId("cvvTarjeta");
@@ -241,7 +242,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         datosTransferencia.hidden = !usaTransferencia;
         datosTarjeta.hidden = !usaTarjeta;
-        [numeroTarjeta, vencimientoTarjeta, cvvTarjeta].forEach(campo => {
+        [titularTarjeta, numeroTarjeta, vencimientoTarjeta, cvvTarjeta].forEach(campo => {
             campo.required = usaTarjeta;
             if (!usaTarjeta) campo.value = "";
         });

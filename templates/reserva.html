@@ -11,7 +11,7 @@
           href="{{ url_for('static', filename='reserva.css', v='3') }}">
 
     <script
-        src="{{ url_for('static', filename='reserva.js', v='6') }}"
+        src="{{ url_for('static', filename='reserva.js', v='7') }}"
         defer>
     </script>
 
@@ -245,22 +245,29 @@
                 </section>
 
                 <section id="datosTarjeta" class="datos-tarjeta" hidden aria-labelledby="tituloDatosTarjeta">
-                    <h3 id="tituloDatosTarjeta">Tarjeta para la demostración</h3>
+                    <h3 id="tituloDatosTarjeta">Datos de la tarjeta</h3>
                     <p class="nota">
-                        Proyecto universitario: usa únicamente datos ficticios. No ingreses una tarjeta real. Estos campos son una demostración y no se envían ni guardan.
+                        Esta demostración académica no procesa ni almacena pagos con tarjeta. No ingreses datos reales.
                     </p>
                     <div class="campo">
-                        <label for="numeroTarjeta">Número de tarjeta de prueba</label>
+                        <label for="titularTarjeta">Titular de la tarjeta</label>
+                        <input id="titularTarjeta"
+                               type="text"
+                               placeholder="Nombre del titular"
+                               autocomplete="off">
+                    </div>
+                    <div class="campo">
+                        <label for="numeroTarjeta">Número de tarjeta</label>
                         <input id="numeroTarjeta"
                                type="text"
-                               placeholder="0000 0000 0000 0000"
+                               placeholder="1234 5678 9012 3456"
                                inputmode="numeric"
                                maxlength="19"
                                autocomplete="off">
                     </div>
                     <div class="fila">
                         <div class="campo">
-                            <label for="vencimientoTarjeta">Vencimiento de prueba</label>
+                            <label for="vencimientoTarjeta">Vencimiento</label>
                             <input id="vencimientoTarjeta"
                                    type="text"
                                    placeholder="MM/AA"
@@ -268,7 +275,7 @@
                                    autocomplete="off">
                         </div>
                         <div class="campo">
-                            <label for="cvvTarjeta">CVV ficticio</label>
+                            <label for="cvvTarjeta">Código de seguridad (CVV)</label>
                             <input id="cvvTarjeta"
                                    type="password"
                                    placeholder="000"
