@@ -52,6 +52,16 @@ def asegurar_columna_habitacion(conn):
     cur.close()
 
 
+def asegurar_columna_estado_pago(conn):
+    cur = conn.cursor()
+    cur.execute("""
+        ALTER TABLE pagos
+        ADD COLUMN IF NOT EXISTS estado VARCHAR(20) NOT NULL DEFAULT 'Confirmado'
+    """)
+    conn.commit()
+    cur.close()
+
+
 # =========================================
 # RUTAS HTML
 # =========================================
@@ -70,6 +80,10 @@ def consultar_factura():
         codigo = request.form.get("codigo", "").strip()
         if codigo:
             return redirect(url_for("ver_factura", codigo=codigo))
+        return render_template(
+            "consultar_factura.html",
+            error="Ingresa el código de factura para realizar la búsqueda."
+        )
     return render_template("consultar_factura.html")
 
 @app.route("/login", methods=["GET", "POST"])
@@ -126,6 +140,7 @@ def ver_factura(codigo):
     """
     try:
         conn = conexion()
+        asegurar_columna_estado_pago(conn)
         cur = conn.cursor()
 
         # Consulta corregida usando p.id_reserva para unirse según tu pgAdmin
@@ -138,12 +153,22 @@ def ver_factura(codigo):
                 r.fecha_entrada, 
                 r.fecha_salida, 
                 r.cantidad_huespedes,
-                f.total, 
-                p.metodo_pago
+                f.total,
+                p.metodo_pago,
+                p.monto_pagado,
+                p.monto_pendiente
             FROM facturas f
             INNER JOIN reservas r ON f.id_reserva = r.id_reserva
             INNER JOIN clientes c ON r.id_cliente = c.id_cliente
-            LEFT JOIN pagos p ON r.id_reserva = p.id_reserva
+            LEFT JOIN (
+                SELECT
+                    id_reserva,
+                    STRING_AGG(DISTINCT metodo_pago, ', ') AS metodo_pago,
+                    COALESCE(SUM(monto) FILTER (WHERE estado = 'Confirmado'), 0) AS monto_pagado,
+                    COALESCE(SUM(monto) FILTER (WHERE estado = 'Pendiente'), 0) AS monto_pendiente
+                FROM pagos
+                GROUP BY id_reserva
+            ) p ON r.id_reserva = p.id_reserva
             WHERE f.codigo = %s
         """, (codigo,))
 
@@ -166,10 +191,22 @@ def ver_factura(codigo):
                 # al calcular subtotal e IVA.
                 total_monto=float(datos[7]),
                 metodo_pago=datos[8] or "No especificado",
+                monto_pagado=float(datos[9]) if datos[9] is not None else 0,
+                monto_pendiente=float(datos[10]) if datos[10] is not None else 0,
+                saldo_monto=max(
+                    0,
+                    float(datos[7])
+                    - (float(datos[9]) if datos[9] is not None else 0)
+                    - (float(datos[10]) if datos[10] is not None else 0)
+                ),
                 factura_codigo=codigo
             )
         else:
-            return "La factura solicitada no existe en el sistema.", 404
+            return render_template(
+                "consultar_factura.html",
+                codigo=codigo,
+                error="No encontramos una factura con ese código. Revísalo e inténtalo nuevamente."
+            ), 404
 
     except Exception as e:
         print("❌ Error al recuperar la factura:", e)
@@ -189,6 +226,7 @@ def obtener_estadisticas_dashboard():
     """
     try:
         conn = conexion()
+        asegurar_columna_estado_pago(conn)
         cur = conn.cursor()
 
         # 1. Total de reservas registradas
@@ -201,8 +239,12 @@ def obtener_estadisticas_dashboard():
         resultado_cli = cur.fetchone()
         total_clientes = resultado_cli[0] if (resultado_cli and resultado_cli) else 0
 
-        # 3. Sumatoria de todos los ingresos percibidos
-        cur.execute("SELECT SUM(total) FROM facturas;")
+        # 3. Sumatoria de los pagos realmente percibidos
+        cur.execute("""
+            SELECT COALESCE(SUM(monto), 0)
+            FROM pagos
+            WHERE estado = 'Confirmado'
+        """)
         resultado_ing = cur.fetchone()
         total_ingresos = resultado_ing[0] if (resultado_ing and resultado_ing) else 0
 
@@ -235,6 +277,7 @@ def guardar_reserva():
         datos = request.get_json()
 
         conn = conexion()
+        asegurar_columna_estado_pago(conn)
         cur = conn.cursor()
         # 1. CLIENTE - Extrae el ID entero puro usando [0]
         cur.execute("""
@@ -266,6 +309,27 @@ def guardar_reserva():
             return jsonify({"error": "La fecha de salida debe ser posterior a la entrada"}), 400
 
         precio_total = noches * precio_noche
+        metodo_pago = datos["metodoPago"]
+        saldo_en_hotel = bool(datos.get("saldoEnHotel", False))
+        tipo_pago = (
+            "50"
+            if metodo_pago == "Pago en el hotel" or saldo_en_hotel
+            else datos.get("tipoPago", "total")
+        )
+
+        if tipo_pago not in ("total", "50"):
+            conn.rollback()
+            return jsonify({"error": "Forma de pago no válida"}), 400
+
+        monto_pagado = precio_total if tipo_pago == "total" else round(precio_total * 0.50)
+        saldo_pendiente = precio_total - monto_pagado
+        estado_reserva = (
+            "Pago pendiente de verificación"
+            if saldo_pendiente == 0
+            else "Anticipo pendiente de verificación"
+        )
+        if saldo_en_hotel and saldo_pendiente > 0:
+            estado_reserva = "Anticipo pendiente; saldo en hotel"
 
         # 3. RESERVA - Extrae el ID entero puro usando [0]
         cur.execute("""
@@ -277,7 +341,7 @@ def guardar_reserva():
             RETURNING id_reserva
         """, (
             id_cliente, datos["entrada"], datos["salida"], datos["personas"],
-            precio_total, "Confirmada", habitacion_recibida
+            precio_total, estado_reserva, habitacion_recibida
         ))
 
         id_reserva = cur.fetchone()[0]
@@ -295,9 +359,9 @@ def guardar_reserva():
 
         # 5. PAGO - Sincronizado exactamente con las columnas de tu pgAdmin
         cur.execute("""
-            INSERT INTO pagos (id_reserva, metodo_pago, monto)
-            VALUES (%s,%s,%s)
-        """, (id_reserva, datos["metodoPago"], precio_total))
+            INSERT INTO pagos (id_reserva, metodo_pago, monto, estado)
+            VALUES (%s,%s,%s,%s)
+        """, (id_reserva, metodo_pago, monto_pagado, "Pendiente"))
 
         conn.commit()
         cur.close()
@@ -305,7 +369,11 @@ def guardar_reserva():
 
         return jsonify({
             "codigo": codigo,
-            "total": precio_total
+            "total": precio_total,
+            "pagado": 0,
+            "pago_pendiente": monto_pagado,
+            "saldo": saldo_pendiente,
+            "tipo_pago": tipo_pago
         })
 
     except Exception as e:
@@ -322,6 +390,7 @@ def guardar_reserva():
 def listar_reservas():
     conn = conexion()
     asegurar_columna_habitacion(conn)
+    asegurar_columna_estado_pago(conn)
     cur = conn.cursor()
     nombres_habitacion = {
         "350000": "Estándar",
@@ -342,13 +411,23 @@ def listar_reservas():
             r.tipo_habitacion,
             f.codigo,
             f.total,
-            p.metodo_pago
+            p.metodo_pago,
+            p.monto_pagado,
+            p.monto_pendiente
         FROM reservas r
         INNER JOIN clientes c
             ON r.id_cliente = c.id_cliente
         LEFT JOIN facturas f
             ON r.id_reserva = f.id_reserva
-        LEFT JOIN pagos p
+        LEFT JOIN (
+            SELECT
+                id_reserva,
+                STRING_AGG(DISTINCT metodo_pago, ', ') AS metodo_pago,
+                COALESCE(SUM(monto) FILTER (WHERE estado = 'Confirmado'), 0) AS monto_pagado,
+                COALESCE(SUM(monto) FILTER (WHERE estado = 'Pendiente'), 0) AS monto_pendiente
+            FROM pagos
+            GROUP BY id_reserva
+        ) p
             ON r.id_reserva = p.id_reserva
         ORDER BY r.id_reserva DESC
     """)
@@ -371,13 +450,124 @@ def listar_reservas():
             ) if fila[8] else "No registrada",
             "factura_codigo": fila[9],
             "factura_total": float(fila[10]) if fila[10] is not None else None,
-            "metodo_pago": fila[11] or "No especificado"
+            "metodo_pago": fila[11] or "No especificado",
+            "monto_pagado": float(fila[12]) if fila[12] is not None else 0,
+            "monto_pendiente": float(fila[13]) if fila[13] is not None else 0,
+            "saldo": max(
+                0,
+                float(fila[6])
+                - (float(fila[12]) if fila[12] is not None else 0)
+                - (float(fila[13]) if fila[13] is not None else 0)
+            )
         })
 
     cur.close()
     conn.close()
 
     return jsonify(reservas)
+
+
+@app.route("/api/reservas/<int:id_reserva>/confirmar-saldo", methods=["POST"])
+@administrador_requerido
+def confirmar_saldo_reserva(id_reserva):
+    conn = conexion()
+    asegurar_columna_estado_pago(conn)
+    cur = conn.cursor()
+
+    try:
+        cur.execute(
+            "SELECT total FROM reservas WHERE id_reserva = %s FOR UPDATE",
+            (id_reserva,)
+        )
+        reserva = cur.fetchone()
+        if not reserva:
+            conn.rollback()
+            return jsonify({"error": "La reserva no existe"}), 404
+
+        cur.execute("""
+            SELECT
+                COALESCE(SUM(monto) FILTER (WHERE estado = 'Confirmado'), 0),
+                COALESCE(SUM(monto) FILTER (WHERE estado = 'Pendiente'), 0)
+            FROM pagos
+            WHERE id_reserva = %s
+        """, (id_reserva,))
+        total_pagado, total_pendiente = cur.fetchone()
+        saldo = reserva[0] - total_pagado - total_pendiente
+        if saldo <= 0:
+            conn.rollback()
+            return jsonify({"error": "La reserva no tiene saldo pendiente"}), 409
+
+        cur.execute("""
+            INSERT INTO pagos (id_reserva, metodo_pago, monto, estado)
+            VALUES (%s, %s, %s, %s)
+        """, (id_reserva, "Transferencia bancaria", saldo, "Confirmado"))
+        if total_pagado + saldo >= reserva[0] and total_pendiente == 0:
+            cur.execute(
+                "UPDATE reservas SET estado = %s WHERE id_reserva = %s",
+                ("Confirmada", id_reserva)
+            )
+
+        conn.commit()
+        return jsonify({"pagado": float(saldo), "saldo": 0})
+    except Exception as e:
+        conn.rollback()
+        print("Error al confirmar el saldo de la reserva:", e)
+        return jsonify({"error": "No se pudo registrar el pago confirmado"}), 500
+    finally:
+        cur.close()
+        conn.close()
+
+
+@app.route("/api/reservas/<int:id_reserva>/confirmar-pagos", methods=["POST"])
+@administrador_requerido
+def confirmar_pagos_pendientes(id_reserva):
+    conn = conexion()
+    asegurar_columna_estado_pago(conn)
+    cur = conn.cursor()
+
+    try:
+        cur.execute(
+            "SELECT total FROM reservas WHERE id_reserva = %s FOR UPDATE",
+            (id_reserva,)
+        )
+        reserva = cur.fetchone()
+        if not reserva:
+            conn.rollback()
+            return jsonify({"error": "La reserva no existe"}), 404
+
+        cur.execute("""
+            UPDATE pagos
+            SET estado = 'Confirmado'
+            WHERE id_reserva = %s AND estado = 'Pendiente'
+            RETURNING monto
+        """, (id_reserva,))
+        pagos_confirmados = cur.fetchall()
+        if not pagos_confirmados:
+            conn.rollback()
+            return jsonify({"error": "No hay pagos pendientes para verificar"}), 409
+
+        monto_confirmado = sum(pago[0] for pago in pagos_confirmados)
+        cur.execute("""
+            SELECT COALESCE(SUM(monto), 0)
+            FROM pagos
+            WHERE id_reserva = %s AND estado = 'Confirmado'
+        """, (id_reserva,))
+        total_pagado = cur.fetchone()[0]
+        if total_pagado >= reserva[0]:
+            cur.execute(
+                "UPDATE reservas SET estado = %s WHERE id_reserva = %s",
+                ("Confirmada", id_reserva)
+            )
+
+        conn.commit()
+        return jsonify({"pagado": float(monto_confirmado)})
+    except Exception as e:
+        conn.rollback()
+        print("Error al verificar pagos de la reserva:", e)
+        return jsonify({"error": "No se pudieron verificar los pagos"}), 500
+    finally:
+        cur.close()
+        conn.close()
 
 # =========================================
 # INICIAR FLASK

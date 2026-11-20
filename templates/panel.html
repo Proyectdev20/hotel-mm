@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel Administrativo | Hotel MM</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='panel.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='panel.css', v='2') }}">
 </head>
 
 <body>
@@ -51,12 +51,16 @@
                             <th>Factura</th>
                             <th>Pago</th>
                             <th>Total</th>
+                            <th>Pagado</th>
+                            <th>A verificar</th>
+                            <th>Saldo</th>
                             <th>Estado</th>
+                            <th>Acción</th>
                         </tr>
                     </thead>
                     <tbody id="tablaReservas">
                         <tr>
-                            <td colspan="11" class="sin-datos">Cargando reservas...</td>
+                            <td colspan="15" class="sin-datos">Cargando reservas...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -64,7 +68,7 @@
         </section>
     </main>
 
-    <script src="{{ url_for('static', filename='panel.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='panel.js', v='2') }}" defer></script>
 </body>
 
 </html>

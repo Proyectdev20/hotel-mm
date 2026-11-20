@@ -141,6 +141,20 @@ tbody tr:hover{
     color: white;
 }
 
+.btn-confirmar-pago {
+    padding: 8px 10px;
+    border: 0;
+    border-radius: 5px;
+    background: #1d5fa7;
+    color: white;
+    cursor: pointer;
+}
+
+.btn-confirmar-pago:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
 .sin-datos{
     text-align: center;
     padding: 40px;

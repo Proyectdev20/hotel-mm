@@ -16,11 +16,15 @@
         <section class="panel">
             <h2>Consultar mi factura</h2>
             <p>Ingresa el código que recibiste al confirmar tu reserva. Ejemplo: FAC-Ab12Cd34.</p>
-            <form method="post">
+            {% if error %}
+            <p class="mensaje error" role="alert">{{ error }}</p>
+            {% endif %}
+            <form method="post" action="{{ url_for('consultar_factura') }}">
                 <div class="campo">
                     <label for="codigo">Código de factura</label>
                     <input id="codigo" name="codigo" type="text"
-                           placeholder="Ingresa tu código de factura" required>
+                           placeholder="Ingresa tu código de factura"
+                           value="{{ codigo or '' }}" autocomplete="off" required>
                 </div>
                 <button type="submit" class="btn">Ver factura</button>
             </form>

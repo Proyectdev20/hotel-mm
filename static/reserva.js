@@ -20,7 +20,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const habitacion = porId("habitacion");
     const personas = porId("personas");
     const mensaje = porId("mensaje");
-    const datosTarjeta = porId("datosTarjeta");
+    const opcionesFormaPago = porId("opcionesFormaPago");
+    const opcionPagoTotal = porId("opcionPagoTotal");
+    const avisoPagoHotel = porId("avisoPagoHotel");
+    const metodoAnticipoHotel = porId("metodoAnticipoHotel");
+    const metodoAnticipo = porId("metodoAnticipo");
+    const datosTransferencia = porId("datosTransferencia");
+    const copiarAlias = porId("copiarAlias");
+    const estadoCopiado = porId("estadoCopiado");
 
     const botonEnviar =
         form.querySelector('button[type="submit"]');
@@ -45,6 +52,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const totalElemento =
         porId("total");
+
+    const montoAhora =
+        porId("montoAhora");
+
+    const saldoPendiente =
+        porId("saldoPendiente");
 
     const precios = {
         "350000": {
@@ -134,12 +147,31 @@ document.addEventListener("DOMContentLoaded", () => {
         resumenSalida.textContent =
             fechaLegible(salida.value);
 
-        totalElemento.textContent =
-            formatoGs(
-                noches > 0
-                    ? noches * elegida.precio
-                    : 0
+        const total =
+            noches > 0
+                ? noches * elegida.precio
+                : 0;
+
+        const pagoSeleccionado =
+            document.querySelector(
+                'input[name="tipo_pago"]:checked'
             );
+
+        const esParcial =
+            pagoSeleccionado &&
+            pagoSeleccionado.value === "50";
+
+        const pagado =
+            esParcial
+                ? Math.round(total * 0.50)
+                : total;
+
+        totalElemento.textContent =
+            formatoGs(total);
+        montoAhora.textContent =
+            formatoGs(pagado);
+        saldoPendiente.textContent =
+            formatoGs(total - pagado);
     }
 
     function actualizarFechas() {
@@ -172,42 +204,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
         console.log("Método:", metodo);
 
-        const usaTarjeta =
-            metodo === "Tarjeta de crédito" ||
-            metodo === "Tarjeta de débito";
+        const esPagoEnHotel =
+            metodo === "Pago en el hotel";
 
-        console.log(
-            "Usa tarjeta:",
-            usaTarjeta
-        );
+        const metodoParaAnticipo =
+            esPagoEnHotel
+                ? metodoAnticipo.value
+                : metodo;
 
-        if (datosTarjeta) {
+        const usaTransferencia =
+            metodoParaAnticipo === "Transferencia bancaria";
 
-            datosTarjeta.style.display =
-                usaTarjeta
-                    ? "block"
-                    : "none";
+        const opcionTotal =
+            form.querySelector('input[name="tipo_pago"][value="total"]');
+        const opcionMitad =
+            form.querySelector('input[name="tipo_pago"][value="50"]');
+
+        opcionesFormaPago.hidden = false;
+        opcionPagoTotal.hidden = esPagoEnHotel;
+        avisoPagoHotel.hidden = !esPagoEnHotel;
+        metodoAnticipoHotel.hidden = !esPagoEnHotel;
+
+        if (esPagoEnHotel) {
+            opcionMitad.checked = true;
+            opcionTotal.disabled = true;
+        } else {
+            opcionTotal.disabled = false;
         }
 
-        if (!usaTarjeta) {
+        datosTransferencia.hidden = !usaTransferencia;
 
-            const titular =
-                porId("titular");
-
-            const tarjetaInput =
-                porId("tarjeta");
-
-            const vencimientoInput =
-                porId("vencimiento");
-
-            const cvv =
-                porId("cvv");
-
-            if (titular) titular.value = "";
-            if (tarjetaInput) tarjetaInput.value = "";
-            if (vencimientoInput) vencimientoInput.value = "";
-            if (cvv) cvv.value = "";
-        }
+        actualizarResumen();
     }
 
     [entrada,
@@ -242,58 +269,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
         });
 
-    const tarjeta =
-        porId("tarjeta");
+    metodoAnticipo.addEventListener(
+        "change",
+        mostrarCamposPago
+    );
 
-    if (tarjeta) {
+    copiarAlias.addEventListener("click", async () => {
+        try {
+            await navigator.clipboard.writeText(
+                porId("aliasTransferencia").textContent
+            );
+            estadoCopiado.textContent = " Alias copiado.";
+        } catch (error) {
+            estadoCopiado.textContent = " No se pudo copiar. Copia el alias manualmente.";
+            console.error("No se pudo copiar el alias:", error);
+        }
+    });
 
-        tarjeta.addEventListener(
-            "input",
-            () => {
-
-                const numeros =
-                    tarjeta.value
-                        .replace(/\D/g, "")
-                        .slice(0, 16);
-
-                tarjeta.value =
-                    numeros
-                        .replace(
-                            /(\d{4})(?=\d)/g,
-                            "$1 "
-                        )
-                        .trim();
-            }
-        );
-    }
-
-    const vencimiento =
-        porId("vencimiento");
-
-    if (vencimiento) {
-
-        vencimiento.addEventListener(
-            "input",
-            () => {
-
-                let numeros =
-                    vencimiento.value
-                        .replace(/\D/g, "")
-                        .slice(0, 4);
-
-                if (numeros.length > 2) {
-
-                    numeros =
-                        numeros.slice(0, 2)
-                        + "/"
-                        + numeros.slice(2);
-                }
-
-                vencimiento.value =
-                    numeros;
-            }
-        );
-    }
+    form
+        .querySelectorAll(
+            'input[name="tipo_pago"]'
+        )
+        .forEach(radio => {
+            radio.addEventListener(
+                "change",
+                actualizarResumen
+            );
+        });
 
     // ========================================================
     // ENVÍO ASÍCRONO CORREGIDO (CALCULA EL TOTAL ANTES DE MANDAR)
@@ -302,7 +304,24 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
 
         const seleccionado = document.querySelector('input[name="pago"]:checked');
-        const metodoPagoText = seleccionado ? seleccionado.value : "Tarjeta de crédito";
+        const metodoBase = seleccionado ? seleccionado.value : "Tarjeta de crédito";
+        const saldoEnHotel = metodoBase === "Pago en el hotel";
+        const metodoPagoText = saldoEnHotel
+            ? metodoAnticipo.value
+            : metodoBase;
+        const formaPago = document.querySelector('input[name="tipo_pago"]:checked');
+        const tipoPago = saldoEnHotel
+            ? "50"
+            : (formaPago ? formaPago.value : "total");
+
+        if (saldoEnHotel && !metodoPagoText) {
+            if (mensaje) {
+                mensaje.textContent = "Selecciona un método adicional para abonar el 50% de anticipo. El saldo restante se paga en el hotel.";
+                mensaje.className = "mensaje error";
+                mensaje.style.display = "block";
+            }
+            return;
+        }
 
         const datosPayload = {
             nombre: nombre.value,
@@ -313,7 +332,9 @@ document.addEventListener("DOMContentLoaded", () => {
             salida: salida.value,
             habitacion: habitacion.value,
             personas: personas.value,
-            metodoPago: metodoPagoText
+            metodoPago: metodoPagoText,
+            tipoPago: tipoPago,
+            saldoEnHotel: saldoEnHotel
         };
 
         try {
@@ -327,7 +348,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const resultado = await respuesta.json();
                 if (mensaje) {
                     const urlFactura = `/factura/${encodeURIComponent(resultado.codigo)}`;
-                    mensaje.innerHTML = `✅ ¡Pago confirmado! 
+                    mensaje.innerHTML = `✅ Reserva registrada. El pago queda pendiente de verificación por el hotel. 
                         <a href="${urlFactura}" target="_blank" rel="noopener">
                             Ver factura ${resultado.codigo}
                         </a>`;

@@ -8,10 +8,10 @@
     <title>Reservas y Pagos | Hotel MM</title>
 
     <link rel="stylesheet"
-          href="{{ url_for('static', filename='reserva.css') }}">
+          href="{{ url_for('static', filename='reserva.css', v='2') }}">
 
     <script
-        src="{{ url_for('static', filename='reserva.js') }}"
+        src="{{ url_for('static', filename='reserva.js', v='5') }}"
         defer>
     </script>
 
@@ -201,58 +201,52 @@
                         Pago en el hotel
                     </label>
                 </div>
+                <p class="nota">
+                    Este formulario no procesa cobros con tarjeta. Los pagos deben confirmarse con el hotel.
+                </p>
 
-                <div id="datosTarjeta">
-                    <div class="campo">
-                        <label for="titular">
-                            Titular de la tarjeta
+                <div id="opcionesFormaPago" hidden>
+                    <h3 class="seccion-titulo">¿Cuánto deseas pagar ahora?</h3>
+
+                    <div class="metodos">
+                        <label class="metodo" id="opcionPagoTotal">
+                            <input type="radio"
+                                   name="tipo_pago"
+                                   value="total"
+                                   checked>
+                            Pagar monto total
                         </label>
-                        <input type="text"
-                               id="titular"
-                               name="titular"
-                               placeholder="Nombre del titular"
-                               autocomplete="cc-name">
-                    </div>
 
-                    <div class="campo">
-                        <label for="tarjeta">
-                            Número de tarjeta
+                        <label class="metodo" id="opcionPago50">
+                            <input type="radio"
+                                   name="tipo_pago"
+                                   value="50">
+                            Pagar 50% ahora
                         </label>
-                        <input type="text"
-                               id="tarjeta"
-                               name="tarjeta"
-                               placeholder="1234 5678 9012 3456"
-                               inputmode="numeric"
-                               maxlength="19"
-                               autocomplete="off">
                     </div>
-
-                    <div class="fila">
-                        <div class="campo">
-                            <label for="vencimiento">
-                                Vencimiento
-                            </label>
-                            <input type="text"
-                                   id="vencimiento"
-                                   name="vencimiento"
-                                   placeholder="MM/AA"
-                                   maxlength="5"
-                                   autocomplete="off">
-                        </div>
-
-                        <div class="campo">
-                            <label for="cvv">
-                                CVV
-                            </label>
-                            <input type="password"
-                                   id="cvv"
-                                   name="cvv"
-                                   placeholder="123"
-                                   maxlength="4"
-                                   autocomplete="off">
-                        </div>
+                    <p id="avisoPagoHotel" class="nota" hidden>
+                        Al elegir pagar en el hotel, debes abonar también el 50% de anticipo con otro método. El saldo restante se paga en el hotel.
+                    </p>
+                    <div class="campo" id="metodoAnticipoHotel" hidden>
+                        <label for="metodoAnticipo">Método para pagar el anticipo del 50%</label>
+                        <select id="metodoAnticipo" name="metodoAnticipo">
+                            <option value="">Selecciona otro método</option>
+                            <option value="Tarjeta de crédito">Tarjeta de crédito</option>
+                            <option value="Tarjeta de débito">Tarjeta de débito</option>
+                            <option value="Transferencia bancaria">Transferencia bancaria</option>
+                        </select>
                     </div>
                 </div>
+
+                <section id="datosTransferencia" class="datos-transferencia" hidden aria-live="polite">
+                    <h3>Datos para la transferencia</h3>
+                    <p><strong>Banco:</strong> Banco Familiar</p>
+                    <p><strong>Titular:</strong> HotelMM2026</p>
+                    <p><strong>Alias:</strong> <span id="aliasTransferencia">hotelmm2026</span></p>
+                    <button id="copiarAlias" class="btn-copiar-alias" type="button">Copiar alias</button>
+                    <span id="estadoCopiado" role="status" aria-live="polite"></span>
+                    <p class="nota">Una vez realizada la transferencia, conserva el comprobante.</p>
+                </section>
 
                 <button type="submit" class="btn">
                     Confirmar reserva
@@ -331,6 +325,14 @@
                     <span id="total">
                         Gs. 0
                     </span>
+                </div>
+                <div class="detalle">
+                    <span>A pagar ahora</span>
+                    <strong id="montoAhora">Gs. 0</strong>
+                </div>
+                <div class="detalle">
+                    <span>Saldo pendiente</span>
+                    <strong id="saldoPendiente">Gs. 0</strong>
                 </div>
 
             </div>

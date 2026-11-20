@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Factura {{ factura_codigo }} - Hotel MM</title>
     <!-- Mantiene los estilos unificados de tu hotel -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='factura.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='factura.css', v='2') }}">
 </head>
 <body>
 
@@ -96,13 +96,40 @@
                     <td><strong>Total General:</strong></td>
                     <td class="text-right"><strong>Gs. {{ "{:,}".format(total_monto|int).replace(',', '.') }}</strong></td>
                 </tr>
+                <tr>
+                    <td><strong>Pagado y confirmado:</strong></td>
+                    <td class="text-right"><strong>Gs. {{ "{:,}".format(monto_pagado|int).replace(',', '.') }}</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>Pendiente de verificación:</strong></td>
+                    <td class="text-right"><strong>Gs. {{ "{:,}".format(monto_pendiente|int).replace(',', '.') }}</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>Saldo pendiente:</strong></td>
+                    <td class="text-right"><strong>Gs. {{ "{:,}".format(saldo_monto|int).replace(',', '.') }}</strong></td>
+                </tr>
             </table>
         </div>
+
+        {% if saldo_monto > 0 %}
+        <button id="mostrarDatosTransferencia" class="pay-balance-btn" type="button">Pagar monto restante</button>
+        <section id="datosPagoSaldo" class="saldo-pago" aria-labelledby="pagarSaldoTitulo" hidden>
+            <h3 id="pagarSaldoTitulo">Datos para pagar el saldo</h3>
+            <p>Saldo pendiente: <strong>Gs. {{ "{:,}".format(saldo_monto|int).replace(',', '.') }}</strong></p>
+            <p>Realiza la transferencia por el saldo exacto a los siguientes datos:</p>
+            <p><strong>Banco:</strong> Banco Familiar</p>
+            <p><strong>Titular:</strong> HotelMM2026</p>
+            <p><strong>Alias:</strong> <span id="aliasTransferenciaFactura">hotelmm2026</span></p>
+            <button id="copiarAliasFactura" class="copy-btn" type="button">Copiar alias</button>
+            <span id="estadoCopiadoFactura" role="status" aria-live="polite"></span>
+            <p>Después de transferir, envía el comprobante a <a href="mailto:info@hotelmm.com?subject=Comprobante%20de%20pago%20{{ factura_codigo }}">info@hotelmm.com</a> indicando la factura {{ factura_codigo }}. El saldo se actualizará cuando el hotel confirme el pago.</p>
+        </section>
+        {% endif %}
 
         <!-- Pie de página informativo -->
         <div class="footer-notes">
             <p><strong>¡Muchas gracias por su preferencia!</strong></p>
-            <p>Esta es una copia física autorizada de comprobante de pago emitida para el pasajero. Los montos se liquidan en Guaraníes (Gs.).</p>
+            <p>Los pagos pendientes se considerarán abonados después de que el hotel confirme la transferencia. Los montos se expresan en Guaraníes (Gs.).</p>
         </div>
 
     </div>
@@ -133,6 +160,30 @@
         if (printButton) {
             printButton.addEventListener('click', () => {
                 window.print();
+            });
+        }
+
+        const copiarAliasBtn = document.getElementById('copiarAliasFactura');
+        if (copiarAliasBtn) {
+            copiarAliasBtn.addEventListener('click', async () => {
+                try {
+                    await navigator.clipboard.writeText(
+                        document.getElementById('aliasTransferenciaFactura').textContent
+                    );
+                    document.getElementById('estadoCopiadoFactura').textContent = ' Alias copiado.';
+                } catch (error) {
+                    document.getElementById('estadoCopiadoFactura').textContent = ' No se pudo copiar. Copia el alias manualmente.';
+                    console.error('No se pudo copiar el alias:', error);
+                }
+            });
+        }
+
+        const mostrarDatosTransferenciaBtn = document.getElementById('mostrarDatosTransferencia');
+        if (mostrarDatosTransferenciaBtn) {
+            mostrarDatosTransferenciaBtn.addEventListener('click', () => {
+                const datosPagoSaldo = document.getElementById('datosPagoSaldo');
+                datosPagoSaldo.hidden = false;
+                datosPagoSaldo.scrollIntoView({ behavior: 'smooth', block: 'center' });
             });
         }
     </script>

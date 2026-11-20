@@ -165,6 +165,45 @@ h3 {
     line-height: 1.6;
 }
 
+.saldo-pago {
+    margin: 0 0 35px auto;
+    max-width: 440px;
+    padding: 18px;
+    border: 1px solid var(--color-hotel-dorado);
+    border-radius: 8px;
+    background: #fcf8ef;
+    line-height: 1.7;
+}
+
+.pay-balance-btn {
+    display: block;
+    margin: 0 0 20px auto;
+    padding: 12px 18px;
+    border: 0;
+    border-radius: 6px;
+    background: var(--color-hotel-oscuro);
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.pay-balance-btn:hover {
+    background: #263f5c;
+}
+
+.saldo-pago h3 {
+    margin-top: 0;
+}
+
+.saldo-pago[hidden] {
+    display: none !important;
+}
+
+.saldo-pago .copy-btn {
+    margin: 8px 0;
+}
+
 /* Interfaz Web - Acciones */
 .actions-bar {
     max-width: 850px;
