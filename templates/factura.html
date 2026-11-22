@@ -96,25 +96,42 @@
                     <td><strong>Total General:</strong></td>
                     <td class="text-right"><strong>Gs. {{ "{:,}".format(total_monto|int).replace(',', '.') }}</strong></td>
                 </tr>
+                {% if monto_pagado < total_monto %}
                 <tr>
                     <td><strong>Pagado y confirmado:</strong></td>
                     <td class="text-right"><strong>Gs. {{ "{:,}".format(monto_pagado|int).replace(',', '.') }}</strong></td>
                 </tr>
-                <tr>
-                    <td><strong>Pendiente de verificación:</strong></td>
-                    <td class="text-right"><strong>Gs. {{ "{:,}".format(monto_pendiente|int).replace(',', '.') }}</strong></td>
-                </tr>
-                <tr>
-                    <td><strong>Saldo pendiente:</strong></td>
-                    <td class="text-right"><strong>Gs. {{ "{:,}".format(saldo_monto|int).replace(',', '.') }}</strong></td>
-                </tr>
+                {% endif %}
             </table>
         </div>
 
-        {% if saldo_monto > 0 %}
-        <a class="pay-balance-btn" href="{{ url_for('pagar_saldo', codigo=factura_codigo) }}">Pagar monto restante</a>
-        {% elif monto_pendiente == 0 %}
-        <p class="paid-badge">Factura pagada totalmente</p>
+        {% if monto_pagado >= total_monto %}
+        <div class="payment-status paid-status" role="status">
+            <span class="payment-status-icon">✓</span>
+            <div>
+                <strong>Reserva pagada totalmente</strong>
+                <p>El pago está confirmado. Puede presentar esta factura directamente.</p>
+            </div>
+        </div>
+        {% elif saldo_monto > 0 %}
+        <div class="payment-status pending-status" role="alert">
+            <span class="payment-status-icon">!</span>
+            <div>
+                <strong>Le falta abonar el 50% restante</strong>
+                <p><span class="remaining-label">Monto pendiente:</span>
+                   <span class="remaining-amount">Gs. {{ "{:,}".format(saldo_monto|int).replace(',', '.') }}</span>
+                </p>
+            </div>
+        </div>
+        <a class="pay-balance-btn" href="{{ url_for('pagar_saldo', codigo=factura_codigo) }}">Abonar el 50% restante</a>
+        {% elif monto_pendiente > 0 %}
+        <div class="payment-status verification-status" role="status">
+            <span class="payment-status-icon">⌛</span>
+            <div>
+                <strong>Pago pendiente de confirmación</strong>
+                <p>El hotel debe verificar el pago antes de marcar la reserva como pagada.</p>
+            </div>
+        </div>
         {% endif %}
 
         <!-- Pie de página informativo -->

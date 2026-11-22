@@ -237,6 +237,83 @@ h3 {
     text-align: center;
 }
 
+.payment-status {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    max-width: 520px;
+    margin: 0 0 22px auto;
+    padding: 18px 20px;
+    border-radius: 8px;
+}
+
+.payment-status-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    border-radius: 50%;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.payment-status strong {
+    display: block;
+    font-size: 18px;
+}
+
+.payment-status p {
+    margin: 5px 0 0;
+}
+
+.paid-status {
+    border: 1px solid #a8dfb8;
+    background: #e7f7ec;
+    color: #176534;
+}
+
+.paid-status .payment-status-icon {
+    background: #176534;
+    color: #fff;
+}
+
+.pending-status {
+    border: 2px solid #b9974f;
+    background: #fff6d9;
+    color: #6d5318;
+}
+
+.pending-status .payment-status-icon {
+    background: #b9974f;
+    color: #fff;
+}
+
+.remaining-label {
+    display: block;
+    font-size: 13px;
+}
+
+.remaining-amount {
+    display: block;
+    color: #7b5a16;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.verification-status {
+    border: 1px solid #b8c6d4;
+    background: #edf3f8;
+    color: #32495d;
+}
+
+.verification-status .payment-status-icon {
+    background: #32495d;
+    color: #fff;
+    font-size: 16px;
+}
+
 .monto-saldo {
     color: #9b762f;
     font-size: 24px;
@@ -432,6 +509,7 @@ h3 {
     }
 
     .actions-bar { display: none; }
+    .pay-balance-btn { display: none; }
 
     .totals-container {
         page-break-inside: avoid;
